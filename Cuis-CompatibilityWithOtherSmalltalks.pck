@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 20 December 2012 at 2:54:11 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 20 December 2012 at 7:21:25 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:36'!
