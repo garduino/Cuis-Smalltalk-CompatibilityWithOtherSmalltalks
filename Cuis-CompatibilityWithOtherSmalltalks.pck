@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 20 December 2012 at 12:40:48 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 20 December 2012 at 2:54:11 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:36'!
@@ -6,17 +6,17 @@ sameAs: aCharacter
 	"Answer whether the receiver is equal to aCharacter, ignoring case"
 	^ (self asLowercase = aCharacter asLowercase)! !
 
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:30'!
+!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 14:53'!
 cr
 	"Answer the Character representing a carriage return."
 
-	^self value: 13! !
+	^ self with: Character crCharacter! !
 
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:31'!
+!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 14:53'!
 lf
 	"Answer the Character representing a linefeed."
 
-	^self value: 10! !
+	^ self with: Character lfCharacter! !
 
 !Collection methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 08:00'!
 asDictionary
