@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 20 December 2012 at 7:21:25 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 25 December 2012 at 6:46:13 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:36'!
@@ -31,6 +31,32 @@ contains: aBlock
 !Set methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 09:14'!
 removeAll
 	self init: array size.! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/25/2012 18:44'!
+subStrings: separators 
+	"Answer an array containing the substrings in the receiver separated 
+	by the elements of separators."
+	| result sourceStream subStringStream |
+	#Collectn.
+	"Changed 2000/04/08 For ANSI <readableString> protocol."
+	(separators isString or: [ separators allSatisfy: [ :element | element isKindOf: Character ] ])
+		ifFalse: [ ^ self error: 'separators must be Characters.' ].
+	sourceStream := self readStream.
+	result := OrderedCollection new.
+	subStringStream := String new writeStream.
+	[ sourceStream atEnd ] whileFalse: [
+		| char |
+		char := sourceStream next.
+		(separators includes: char)
+			ifTrue: [
+				subStringStream isEmpty ifFalse: [
+					result add: subStringStream contents.
+					subStringStream := String new writeStream ] ]
+			ifFalse: [
+				subStringStream nextPut: char ] ].
+	subStringStream isEmpty ifFalse: [
+		result add: subStringStream contents ].
+	^ result asArray! !
 
 !String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:26'!
 cr
