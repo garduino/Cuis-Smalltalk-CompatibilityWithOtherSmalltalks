@@ -1,18 +1,18 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1517] on 25 December 2012 at 6:46:13 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1522] on 26 December 2012 at 8:42:42 am'!
 'Description Please enter a description for this package '!
 
-!Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:36'!
+!Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
 sameAs: aCharacter 
 	"Answer whether the receiver is equal to aCharacter, ignoring case"
 	^ (self asLowercase = aCharacter asLowercase)! !
 
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 14:53'!
+!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:38'!
 cr
 	"Answer the Character representing a carriage return."
 
 	^ self with: Character crCharacter! !
 
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 14:53'!
+!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:38'!
 lf
 	"Answer the Character representing a linefeed."
 
@@ -32,7 +32,7 @@ contains: aBlock
 removeAll
 	self init: array size.! !
 
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/25/2012 18:44'!
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 subStrings: separators 
 	"Answer an array containing the substrings in the receiver separated 
 	by the elements of separators."
@@ -58,20 +58,20 @@ subStrings: separators
 		result add: subStringStream contents ].
 	^ result asArray! !
 
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:26'!
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 cr
 	"Answer a string containing a single carriage return character."
 
 	^ self with: Character crCharacter! !
 
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:26'!
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 crlf
 	"Answer a string containing a carriage return and a linefeed."
 
 	^ self with: Character crCharacter with: Character lfCharacter
 ! !
 
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:27'!
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 lf
 	"Answer a string containing a single Lf character."
 
