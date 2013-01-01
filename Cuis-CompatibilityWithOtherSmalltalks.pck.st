@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1524] on 30 December 2012 at 5:48:14 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 1 January 2013 at 2:19:44 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
@@ -31,6 +31,13 @@ contains: aBlock
 !Set methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 09:14'!
 removeAll
 	self init: array size.! !
+
+!SocketStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:48'!
+crlf
+	"Append a newLine character to the receiver.
+	The Cuis convention is to use lf on output."
+
+	self nextPutAll: String newLineString! !
 
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 subStrings: separators 
@@ -91,3 +98,11 @@ minutes
 seconds
 
 	^ self second! !
+
+!Transcript class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:46'!
+cr
+	"WriteStream protocol.
+	In the older TranscriptStream, it added a CR character.
+	Now, finish the current incomplete entry."
+
+	self finishEntry! !
