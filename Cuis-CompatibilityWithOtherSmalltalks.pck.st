@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 1 January 2013 at 2:19:44 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 1 January 2013 at 7:35:06 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
@@ -106,3 +106,10 @@ cr
 	Now, finish the current incomplete entry."
 
 	self finishEntry! !
+
+!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 19:32'!
+crlf
+	"Append a newLine character to the receiver.
+	The Cuis convention is to use lf on output."
+
+	self nextPutAll: String newLineString! !
