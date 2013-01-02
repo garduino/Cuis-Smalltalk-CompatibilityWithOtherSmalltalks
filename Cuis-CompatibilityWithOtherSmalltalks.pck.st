@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 1 January 2013 at 7:35:06 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 1 January 2013 at 9:01:04 pm'!
 'Description Please enter a description for this package '!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
@@ -64,6 +64,12 @@ subStrings: separators
 	subStringStream isEmpty ifFalse: [
 		result add: subStringStream contents ].
 	^ result asArray! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 20:44'!
+withCRs
+	"Return a copy of the receiver in which backslash (\) characters have been replaced with carriage returns."
+
+	^ self collect: [ :c | c = $\ ifTrue: [ Character crCharacter ] ifFalse: [ c ]].! !
 
 !String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 cr
