@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 2 January 2013 at 1:38:37 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 2 January 2013 at 6:17:30 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -40,6 +40,10 @@ asDictionary
 contains: aBlock
 	"VW compatibility"
 	^self anySatisfy: aBlock! !
+
+!Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
+isDictionary
+	^true! !
 
 !NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
 ascii
