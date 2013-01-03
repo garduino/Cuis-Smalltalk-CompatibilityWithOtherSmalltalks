@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 2 January 2013 at 6:17:30 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 2 January 2013 at 9:07:51 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -233,6 +233,34 @@ new
 
 	^self basicNew initialize! !
 
+!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
+upToAnyOf: aCollection 
+	"Answer a subcollection from the current access position to the 
+	occurrence (if any, but not inclusive) of any object in the collection. If 
+	no matching object is found, answer the entire rest of the receiver."
+	^self upToAnyOf: aCollection do: [:matchingObject | ]! !
+
+!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
+upToAnyOf: subcollection do: aBlock
+	"Answer a subcollection from the current access position to the occurrence (if any, but not inclusive) of any object in the collection.
+	Evaluate aBlock with this occurence as argument.
+	If no matching object is found, don't evaluate aBlock and answer the entire rest of the receiver."
+	
+	^self collectionSpecies new: 1000 streamContents: [ :stream |
+		| ch |
+		[ self atEnd or: [ (subcollection includes: (ch := self next)) and: [aBlock value: ch. true] ] ] 
+			whileFalse: [ stream nextPut: ch ] ]! !
+
+!SequenceableCollection class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:07'!
+new: newSize streamContents: blockWithArg
+
+	| stream |
+	stream := WriteStream on: (self new: newSize).
+	blockWithArg value: stream.
+	stream position = newSize
+		ifTrue: [ ^stream originalContents ]
+		ifFalse: [ ^stream contents ]! !
+
 !Set methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 09:14'!
 removeAll
 	self init: array size.! !
@@ -243,6 +271,11 @@ crlf
 	The Cuis convention is to use lf on output."
 
 	self nextPutAll: String newLineString! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:46'!
+encodeForHTTP
+
+	^ self ! !
 
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 subStrings: separators 
@@ -269,6 +302,10 @@ subStrings: separators
 	subStringStream isEmpty ifFalse: [
 		result add: subStringStream contents ].
 	^ result asArray! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:45'!
+unescapePercentsWithTextEncoding: encodingName 
+	^ self! !
 
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 20:44'!
 withCRs
