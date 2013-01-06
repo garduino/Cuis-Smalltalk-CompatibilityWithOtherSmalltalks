@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 12:44:47 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 12:48:51 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -44,6 +44,16 @@ contains: aBlock
 !Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
 isDictionary
 	^true! !
+
+!FileDirectory methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:48'!
+pathFromUrl: aFileUrl
+	
+	^String streamContents: [ :s | | first |
+		first := false.
+		aFileUrl path do: [ :p |
+			first ifTrue: [ s nextPut: self pathNameDelimiter ].
+			first := true.
+			s nextPutAll: p ] ].! !
 
 !NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
 ascii
