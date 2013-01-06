@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1528] on 2 January 2013 at 9:07:51 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 11:57:30 am'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -354,6 +354,12 @@ cr
 	Now, finish the current incomplete entry."
 
 	self finishEntry! !
+
+!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 11:48'!
+cr
+	"Append a return character to the receiver."
+
+	self nextPut: Character crCharacter! !
 
 !WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 19:32'!
 crlf
