@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 11:57:30 am'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 12:44:47 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -325,6 +325,10 @@ crlf
 
 	^ self with: Character crCharacter with: Character lfCharacter
 ! !
+
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:43'!
+crlfcrlf
+	^self crlf , self crlf.! !
 
 !String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
 lf
