@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 12:48:51 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 2:42:04 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -44,6 +44,20 @@ contains: aBlock
 !Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
 isDictionary
 	^true! !
+
+!DirectoryEntry class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 14:42'!
+name: name0  creationTime: creationTime  modificationTime: modificationTime   isDirectory: isDirectory  fileSize: fileSize
+	"This is the legacy creation method we are trying to phase out.  Please use #directory:  name:  creationTime:  modificationTime:  fileSize:." 
+	| type |
+	type := isDirectory 
+		ifTrue: [ DirectoryEntryDirectory ]
+		ifFalse: [ DirectoryEntryFile ].
+	^ type
+		directory: nil
+		name: name0  
+		creationTime: creationTime  
+		modificationTime: modificationTime   
+		fileSize: fileSize! !
 
 !FileDirectory methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:48'!
 pathFromUrl: aFileUrl
