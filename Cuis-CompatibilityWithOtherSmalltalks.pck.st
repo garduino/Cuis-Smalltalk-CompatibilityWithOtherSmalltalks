@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 2:42:04 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 5:09:34 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -41,6 +41,18 @@ contains: aBlock
 	"VW compatibility"
 	^self anySatisfy: aBlock! !
 
+!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:08'!
+asSeconds
+ 	"Answer the seconds since the Squeak epoch: 1 January 1901"
+ 
+ 	^ start asSeconds! !
+
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:05'!
+asSeconds
+ 	"Return the number of seconds since the Squeak epoch"
+ 	^ (self - (self class epoch)) asSeconds
+ ! !
+
 !Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
 isDictionary
 	^true! !
@@ -58,6 +70,12 @@ name: name0  creationTime: creationTime  modificationTime: modificationTime   is
 		creationTime: creationTime  
 		modificationTime: modificationTime   
 		fileSize: fileSize! !
+
+!Duration methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 16:54'!
+asSeconds
+ 	"Answer the number of seconds in the receiver."
+ 	^ seconds
+ ! !
 
 !FileDirectory methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:48'!
 pathFromUrl: aFileUrl
