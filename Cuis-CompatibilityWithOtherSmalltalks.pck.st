@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 7:14:19 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 7:32:10 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
