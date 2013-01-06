@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 6:52:24 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 7:14:19 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -293,6 +293,11 @@ new
 	"Creates a new instance"
 
 	^self basicNew initialize! !
+
+!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 19:14'!
+readFromString: aString 
+	"Create an object based on the contents of aString."
+	^ self readFrom: aString readStream! !
 
 !Password methodsFor: 'accessing' stamp: 'tk 1/3/98 21:36'!
 cache: anObject
