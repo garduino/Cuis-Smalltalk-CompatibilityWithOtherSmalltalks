@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 6:40:07 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 6:52:24 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -402,6 +402,17 @@ crlf
 	The Cuis convention is to use lf on output."
 
 	self nextPutAll: String newLineString! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 18:52'!
+charactersExactlyMatching: aString
+	"Do a character-by-character comparison between the receiver and aString.  Return the index of the final character that matched exactly."
+
+	| count |
+	count := self size min: aString size.
+	1 to: count do: [:i | 
+		(self at: i) = (aString at: i) ifFalse: [
+			^ i - 1]].
+	^ count! !
 
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:46'!
 encodeForHTTP
