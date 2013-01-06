@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 5:09:34 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 6:40:07 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -10,9 +10,28 @@ Stream subclass: #NullStream
 NullStream class
 	instanceVariableNames: ''!
 
+!classDefinition: #Password category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Object subclass: #Password
+	instanceVariableNames: 'cache sequence'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'Password class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Password class
+	instanceVariableNames: ''!
+
 
 !NullStream commentStamp: 'ar 2/25/2010 14:49' prior: 0!
 NullStream is a stream generating and consuming an infinite number of elements. It can be used as an equivalent of /dev/null or for performance benchmarks.!
+
+!Password commentStamp: '<historical>' prior: 0!
+"Hold a password.  There are three ways to get the password.
+
+If there is no password (sequence == nil), ask the user for it.
+
+If the use supplied one during this session, return that.  It is cleared at shutDown.
+
+If sequence is a number, get the server passwords off the disk.  File 'sqk.info' must be in the same folder 'Squeak.sources' file.  Decode the file.  Return the password indexed by sequence."!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
 sameAs: aCharacter 
@@ -274,6 +293,76 @@ new
 	"Creates a new instance"
 
 	^self basicNew initialize! !
+
+!Password methodsFor: 'accessing' stamp: 'tk 1/3/98 21:36'!
+cache: anObject
+	cache := anObject! !
+
+!Password methodsFor: 'as yet unclassified' stamp: 'tk 1/5/98 21:08'!
+decode: string
+	"Xor with secret number -- just so file won't have raw password in it"
+	| kk rand |
+	rand := Random new seed: 234237.
+	kk := (ByteArray new: string size) collect: [:bb | (rand next * 255) asInteger].
+	1 to: kk size do: [:ii |
+		kk at: ii put: ((kk at: ii) bitXor: (string at: ii) asciiValue)].
+	^ kk asString! !
+
+!Password methodsFor: 'accessing' stamp: 'gsa 1/6/2013 18:39'!
+passwordFor: serverDir
+
+"gsa 6/1/2013 Replaced UIManager for FillInTheBlankMorph. We should add #requestPassword to this morph"
+
+	"Returned the password from one of many sources.  OK if send in a nil arg."
+
+	| sp msg |
+	cache ifNotNil: [^ cache].
+	sequence ifNotNil: [
+		(sp := self serverPasswords) ifNotNil: [
+			sequence <= sp size ifTrue: [^ sp at: sequence]]].
+	msg := serverDir isRemoteDirectory
+		ifTrue: [serverDir moniker]
+		ifFalse: ['this directory'].
+	(serverDir user = 'anonymous') & (serverDir typeWithDefault == #ftp) ifTrue: [
+			"^ cache := UIManager default request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
+			initialAnswer: 'yourName@company.com'"
+			
+			^ cache := FillInTheBlankMorph request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
+			initialAnswer: 'yourName@company.com' 
+			
+			].
+
+	"^ cache := UIManager default requestPassword: 'Password for ', serverDir user, ' at ', msg, ':'."
+	
+	^ cache := FillInTheBlankMorph request: 'Password for ', serverDir user, ' at ', msg, ':'.
+	
+		"Diff between empty string and abort?"! !
+
+!Password methodsFor: 'accessing' stamp: 'mir 6/29/2001 01:01'!
+sequence
+	^sequence! !
+
+!Password methodsFor: 'accessing' stamp: 'tk 1/5/98 21:14'!
+sequence: anNumber
+	sequence := anNumber! !
+
+!Password methodsFor: 'as yet unclassified' stamp: 'HenrikSperreJohansen 6/12/2010 02:37'!
+serverPasswords
+	"Get the server passwords off the disk and decode them. The file 'sqk.info' must be in some folder that Squeak thinks is special (vm folder, or default directory).  (Note: This code works even if you are running with no system sources file.)"
+
+	| sfile |
+	(sfile := FileDirectory lookInUsualPlaces: 'sqk.info') ifNil: [^ nil].
+		"If not there, Caller will ask user for password"
+		"If you don't have this file, and you really do want to release an update, 
+		 contact Ted Kaehler."
+	^ (self decode: sfile contentsOfEntireFile) lines
+! !
+
+!Password class methodsFor: 'as yet unclassified' stamp: 'tk 6/24/1999 11:36'!
+shutDown
+	"Forget all cached passwords, so they won't stay in the image"
+
+	self allSubInstancesDo: [:each | each cache: nil].! !
 
 !PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
 upToAnyOf: aCollection 
