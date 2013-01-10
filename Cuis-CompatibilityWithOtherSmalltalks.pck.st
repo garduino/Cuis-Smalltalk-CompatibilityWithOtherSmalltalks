@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 6 January 2013 at 7:32:10 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 10 January 2013 at 8:10 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -20,6 +20,26 @@ Object subclass: #Password
 Password class
 	instanceVariableNames: ''!
 
+!classDefinition: #TimeStamp category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+DateAndTime subclass: #TimeStamp
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'TimeStamp class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+TimeStamp class
+	instanceVariableNames: ''!
+
+!classDefinition: #TimeStampTest category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+TestCase subclass: #TimeStampTest
+	instanceVariableNames: 'timestamp aTimeStamp'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'TimeStampTest class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+TimeStampTest class
+	instanceVariableNames: ''!
+
 
 !NullStream commentStamp: 'ar 2/25/2010 14:49' prior: 0!
 NullStream is a stream generating and consuming an infinite number of elements. It can be used as an equivalent of /dev/null or for performance benchmarks.!
@@ -32,6 +52,12 @@ If there is no password (sequence == nil), ask the user for it.
 If the use supplied one during this session, return that.  It is cleared at shutDown.
 
 If sequence is a number, get the server passwords off the disk.  File 'sqk.info' must be in the same folder 'Squeak.sources' file.  Decode the file.  Return the password indexed by sequence."!
+
+!TimeStamp commentStamp: '<historical>' prior: 0!
+This represents a duration of 0 length that marks a particular point in time.!
+
+!TimeStampTest commentStamp: 'brp 7/26/2003 22:44' prior: 0!
+This is the unit test for the class TimeStamp.!
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
 sameAs: aCharacter 
@@ -66,11 +92,28 @@ asSeconds
  
  	^ start asSeconds! !
 
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:53'!
+asDate
+
+	^ Date starting: self! !
+
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:05'!
+asDuration
+	"Answer the duration since midnight."
+
+	^ Duration seconds: seconds nanoSeconds: nanos
+! !
+
 !DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:05'!
 asSeconds
  	"Return the number of seconds since the Squeak epoch"
  	^ (self - (self class epoch)) asSeconds
  ! !
+
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:59'!
+asTime
+
+	^ Time seconds: seconds nanoSeconds: nanos! !
 
 !Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
 isDictionary
@@ -408,6 +451,18 @@ crlf
 
 	self nextPutAll: String newLineString! !
 
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:47'!
+asTime
+	"Many allowed forms, see Time>>readFrom:"
+
+	^ Time fromString: self.! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:49'!
+asTimeStamp
+	"Convert from obsolete TimeStamp format"
+
+ 	^ TimeStamp fromString: self! !
+
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 18:52'!
 charactersExactlyMatching: aString
 	"Do a character-by-character comparison between the receiver and aString.  Return the index of the final character that matched exactly."
@@ -497,6 +552,357 @@ minutes
 seconds
 
 	^ self second! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:13'!
+asTimeStamp
+	"Answer the receiver as an instance of TimeStamp."
+
+	^ self! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:14'!
+date
+	"Answer the date of the receiver."
+
+	^ self asDate! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+dateAndTime
+	"Answer a two element Array containing the receiver's date and time."
+
+	^ Array with: self date with: self time! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+minusDays: anInteger
+	"Answer a TimeStamp which is anInteger days before the receiver."
+
+	^ self - (anInteger days)! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+minusSeconds: anInteger
+	"Answer a TimeStamp which is anInteger number of seconds before the receiver."
+
+	^ self - (anInteger seconds)! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:18'!
+plusDays: anInteger
+	"Answer a TimeStamp which is anInteger days after the receiver."
+
+	^ self + (anInteger days)! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+plusSeconds: anInteger
+	"Answer a TimeStamp which is anInteger number of seconds after the receiver."
+
+	^ self + (anInteger seconds)! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+printOn: aStream 
+	"Print receiver's date and time on aStream."
+
+	aStream 
+		nextPutAll: self date printString;
+		space;
+		nextPutAll: self time printString.! !
+
+!TimeStamp methodsFor: 'squeak protocol'!
+species
+
+	^ DateAndTime! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+storeOn: aStream 
+
+	aStream 
+		print: self printString;
+		nextPutAll: ' asTimeStamp'! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:15'!
+time
+	"Answer the time of the receiver."
+
+	^ self asTime! !
+
+!TimeStamp class methodsFor: 'squeak protocol' stamp: 'fbs 4/20/2004 14:21'!
+current
+
+	| ts ticks |
+	ts := super now.
+	
+	ticks := ts ticks.
+	ticks at: 3 put: 0.
+	ts ticks: ticks offset: ts offset.
+	
+	^ ts
+		
+! !
+
+!TimeStamp class methodsFor: 'instance creation' stamp: 'PeterHugossonMiller 9/2/2009 16:03'!
+fromMethodTimeStamp: aString
+	| stream |
+	(stream := aString readStream)
+		skipSeparators;
+		skipTo: Character space.
+	^self readFrom: stream.! !
+
+!TimeStamp class methodsFor: 'ansi protocol' stamp: 'fbs 4/20/2004 14:22'!
+now
+	"Answer the current date and time as a TimeStamp."
+
+	^self current! !
+
+!TimeStamp class methodsFor: 'instance creation' stamp: 'stephaneducasse 2/4/2006 20:47'!
+readFrom: stream
+	| date time |
+	stream skipSeparators.
+	date := Date readFrom: stream.
+	stream skipSeparators.
+	time := Time readFrom: stream.
+	^self 
+		date: date
+		time: time! !
+
+!TimeStampTest methodsFor: 'Coverage' stamp: 'brp 7/27/2003 13:50'!
+classToBeTested
+
+	^ self timestampClass! !
+
+!TimeStampTest methodsFor: 'Coverage' stamp: 'brp 1/30/2005 09:13'!
+selectorsToBeIgnored
+
+	| deprecated private special |
+
+	deprecated := #().
+	private := #( #printOn: ).
+	special := #().
+
+	^ super selectorsToBeIgnored, deprecated, private, special.! !
+
+!TimeStampTest methodsFor: 'Running' stamp: 'brp 1/21/2004 18:41'!
+setUp
+
+	timestamp := self timestampClass date: ('1-10-2000' asDate) time: ('11:55:00 am' asTime).
+
+	aTimeStamp := TimeStamp readFrom: '1-02-2004 12:34:56 am' readStream! !
+
+!TimeStampTest methodsFor: 'Running' stamp: 'brp 7/26/2003 21:53'!
+tearDown
+
+	timestamp := nil.! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'StephaneDucasse 10/6/2010 20:31'!
+testAccessing
+
+	| d t |
+	d := '1-10-2000' asDate.
+	t := '11:55:00 am' asTime.
+
+	self
+		assert: timestamp date asString = d asString;
+		assert: timestamp time asString = t asString.
+! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 7/26/2003 22:05'!
+testArithmetic
+
+	| ts |
+	ts := timestamp minusDays: 123.  	"9 September 1999, 11:55 am"
+	ts := ts minusSeconds: 1056.			"9 September 1999, 11:37:24 am"
+	ts := ts plusDays: 123.				"10 January 2000, 11:37:24 am"
+	ts := ts plusSeconds: 1056.			"10 January 2000, 11:55 am"
+	self
+		assert: ts  = timestamp.
+
+	! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 1/9/2004 06:34'!
+testArithmeticAcrossDateBoundary
+
+	| ts |
+	ts := timestamp minusSeconds: ((11*3600) + (55*60) + 1).
+	self
+		assert: ts = ('1-9-2000 11:59:59 pm' asTimeStamp).
+
+	! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 3/12/2004 15:54'!
+testComparing
+
+	| ts1 ts2 ts3 c1 c2 le |
+	ts1 := self timestampClass date: ('01-10-2000' asDate) time: ('11:55:00 am' asTime).
+	ts2 := self timestampClass date: ('07-26-2003' asDate) time: ('22:09:45 am' asTime).
+	ts3 := self timestampClass date: ('05-28-1972' asDate) time: ('04:31:14 pm' asTime).
+
+	self
+		assert: ts1 = timestamp;
+		assert: ts1 hash = timestamp hash;
+		assert: timestamp = timestamp copy;
+		assert: ts1 < ts2;
+		deny: ts1 < ts3.
+
+	c1 := self timestampClass current.
+	c2 := self timestampClass current.
+	le := (c1 <= c2).
+	self assert: le.
+
+! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'StephaneDucasse 10/6/2010 20:33'!
+testConverting
+
+	| d t |
+	d := '1-10-2000' asDate.
+	t := '11:55:00 am' asTime.
+
+	self
+		assert: timestamp asSeconds = (d asSeconds + t asSeconds);
+		assert: timestamp asDate asString = d asString;
+		assert: timestamp asTime = t;
+		assert: timestamp asTimeStamp == timestamp;
+		assert: timestamp dateAndTime first asString =  d asString;
+		assert: timestamp dateAndTime second asString =  t asString.
+! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:33'!
+testDate
+	self assert: aTimeStamp date asString = '01-02-2004' asDate asString! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:34'!
+testDateAndTime
+	self assert: aTimeStamp dateAndTime first asString =  '01-02-2004' asDate asString.
+	self assert: aTimeStamp dateAndTime second asString =   '00:34:56' asTime asString! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 7/27/2003 13:55'!
+testFromSeconds
+
+	self
+		assert: (self timestampClass fromSeconds: 3124958100) = timestamp.! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 8/23/2003 15:02'!
+testFromString
+	"This should signal an exception in 3.6beta as Time>>fromString: does not exist."
+
+	self should: [ timestamp = (self timestampClass fromString: '1-10-2000 11:55:00 am') ] 
+
+! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 1/30/2005 09:12'!
+testInstanceCreation
+
+	self 
+		should: [ self timestampClass midnight asDuration = (0 hours) ];
+		should: [ self timestampClass noon asDuration = (12 hours) ].
+! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:35'!
+testMinusDays
+	self assert: (aTimeStamp minusDays: 5) dateAndTime first asString = 
+			'12-28-2003' asDate asString.
+	self assert: (aTimeStamp minusDays: 5) dateAndTime second asString = 
+		 '00:34:56' asTime asString! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:37'!
+testMinusSeconds
+
+	| dAndt |
+	dAndt := (aTimeStamp minusSeconds: 34 * 60 + 56) dateAndTime.
+	self assert: dAndt first asString =  '01-02-2004' asDate asString.
+	self assert: dAndt second asString =  '00:00:00' asTime asString! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:39'!
+testMinusSecondsOverMidnight
+	
+	| dAndt |
+	dAndt := (aTimeStamp minusSeconds: 34 * 60 + 57) dateAndTime.
+	self assert: dAndt first asString =  '01-01-2004' asDate asString.
+	self assert: dAndt second asString =  '23:59:59' asTime asString
+	"Bug The results are actual results are: #(1 January 2005 11:25:03 pm)"! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:40'!
+testPlusDays
+	
+	| dAndt |
+	dAndt := (aTimeStamp plusDays: 366) dateAndTime.
+	self assert: dAndt first asString =  '01-02-2005' asDate asString.
+	self assert: dAndt second asString =  '00:34:56' asTime asString		
+	! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:41'!
+testPlusSeconds
+			
+	| dAndt |
+	dAndt := (aTimeStamp plusSeconds: 60 * 60) dateAndTime.
+	self assert: dAndt first asString =  '01-02-2004' asDate asString.
+	self assert: dAndt second asString =  '01:34:56' asTime asString! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'StephaneDucasse 10/6/2010 20:44'!
+testPlusSecondsOverMidnight
+			
+	| dAndt |
+	dAndt := (aTimeStamp plusSeconds: 24 * 60 * 60 + 1) dateAndTime.
+	self assert: dAndt first asString =  '01-03-2004' asDate asString.
+	self assert: dAndt second asString =  '00:34:57' asTime asString! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'damiencassou 5/30/2008 11:09'!
+testPrintOn
+	| cs rw |
+	cs := '2 January 2004 12:34:56 am' readStream.
+	rw := ReadWriteStream on: ''.
+	aTimeStamp printOn: rw.
+	self assert: rw contents = cs contents! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 8/23/2003 15:02'!
+testPrinting
+
+	self	
+		assert: timestamp printString = '10 January 2000 11:55 am'.
+! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'cbc 2/4/2004 21:18'!
+testReadFromA1
+	|ts|
+	ts := TimeStamp current.
+ 	self assert: (ts = (TimeStamp fromString: ts asString)).! !
+
+!TimeStampTest methodsFor: 'Tests' stamp: 'brp 8/23/2003 17:47'!
+testSorting
+
+	| c1 c2 |
+	c1 := self timestampClass current.
+	c2 := self timestampClass current.
+
+	self
+		assert: (self timestampClass current) <= (self timestampClass current);
+		assert: (c1 <= c2).
+
+
+! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'damiencassou 5/30/2008 11:09'!
+testStoreOn
+	| cs rw |
+	cs := '''2 January 2004 12:34:56 am'' asTimeStamp' readStream.
+	rw := ReadWriteStream on: ''.
+	aTimeStamp storeOn: rw.
+	self assert: rw contents = cs contents! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'brp 1/21/2004 18:41'!
+testTime
+	self assert: aTimeStamp time =  '00:34:56' asTime! !
+
+!TimeStampTest methodsFor: 'testing' stamp: 'brp 1/21/2004 18:41'!
+testTimeStamp
+	self assert: aTimeStamp = aTimeStamp asTimeStamp
+! !
+
+!TimeStampTest methodsFor: 'Private' stamp: 'brp 7/27/2003 13:50'!
+timestampClass
+
+	^ TimeStamp! !
+
+!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:02'!
+starting: aDateAndTime 
+
+	^ self starting: aDateAndTime duration: Duration zero ! !
 
 !Transcript class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:46'!
 cr
