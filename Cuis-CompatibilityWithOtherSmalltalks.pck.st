@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 10 January 2013 at 8:10 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 10 January 2013 at 8:46:11 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -96,6 +96,12 @@ asSeconds
 asDate
 
 	^ Date starting: self! !
+
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:43'!
+asDateAndTime
+
+	^ self
+! !
 
 !DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:05'!
 asDuration
@@ -903,6 +909,14 @@ timestampClass
 starting: aDateAndTime 
 
 	^ self starting: aDateAndTime duration: Duration zero ! !
+
+!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:42'!
+starting: aDateAndTime duration: aDuration
+
+	^ self basicNew
+  		start: aDateAndTime asDateAndTime;
+ 		duration: aDuration;
+		yourself.! !
 
 !Transcript class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:46'!
 cr
