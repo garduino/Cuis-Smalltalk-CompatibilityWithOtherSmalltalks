@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 1:35:35 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 2:04:15 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -91,6 +91,11 @@ asSeconds
  	"Answer the seconds since the Squeak epoch: 1 January 1901"
  
  	^ start asSeconds! !
+
+!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:58'!
+subtractDays: dayCount 
+
+	^ (self asDateAndTime - (dayCount days)) asDate! !
 
 !DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:53'!
 asDate
@@ -924,6 +929,11 @@ testTimeStamp
 timestampClass
 
 	^ TimeStamp! !
+
+!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:59'!
+asDateAndTime
+
+	^ start ! !
 
 !Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:02'!
 starting: aDateAndTime 
