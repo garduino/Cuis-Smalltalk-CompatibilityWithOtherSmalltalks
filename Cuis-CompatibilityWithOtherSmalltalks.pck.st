@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 12:00:33 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 1:35:35 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -120,6 +120,11 @@ asSeconds
 asTime
 
 	^ Time seconds: seconds nanoSeconds: nanos! !
+
+!DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:34'!
+day
+ 
+ 	^ self dayOfYear! !
 
 !Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
 isDictionary
