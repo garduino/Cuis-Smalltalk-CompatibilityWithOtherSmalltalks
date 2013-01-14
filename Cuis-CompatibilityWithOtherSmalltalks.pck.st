@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 10 January 2013 at 8:46:11 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 12:00:33 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -456,6 +456,21 @@ crlf
 	The Cuis convention is to use lf on output."
 
 	self nextPutAll: String newLineString! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:59'!
+asByteString
+	"Convert the receiver into a ByteString, if possible"
+	"Do not raise an error if it's not possible, since my use case is usually one in which WideStrings may or may not have been mutated to something representable in a ByteString, and we mostly do this to save space if possible. If the percentage of such cases are small, it may be better to use isOctetString check first to avoid creating String instances"	
+	^self asOctetString! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:58'!
+asOctetString
+	"Convert the receiver into an octet string, if possible"
+	"(IE, I am a WideString containing only character with codePoints < 255, so all of them fit in a latin1-string)."
+	| string |
+	string := String new: self size.
+	1 to: self size do: [:i | string at: i put: (self at: i)].
+	^string! !
 
 !String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:47'!
 asTime
