@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1549] on 14 January 2013 at 2:04:15 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1561] on 20 January 2013 at 3:33:55 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -18,6 +18,16 @@ Object subclass: #Password
 	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
 !classDefinition: 'Password class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Password class
+	instanceVariableNames: ''!
+
+!classDefinition: #ScaledDecimal category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Fraction subclass: #ScaledDecimal
+	instanceVariableNames: 'scale'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'ScaledDecimal class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+ScaledDecimal class
 	instanceVariableNames: ''!
 
 !classDefinition: #TimeStamp category: #'Cuis-CompatibilityWithOtherSmalltalks'!
@@ -52,6 +62,13 @@ If there is no password (sequence == nil), ask the user for it.
 If the use supplied one during this session, return that.  It is cleared at shutDown.
 
 If sequence is a number, get the server passwords off the disk.  File 'sqk.info' must be in the same folder 'Squeak.sources' file.  Decode the file.  Return the password indexed by sequence."!
+
+!ScaledDecimal commentStamp: 'nice 5/16/2009 20:45' prior: 0!
+ScaledDecimal implement a special kind of Fraction that prints in decimal notation.
+It uses a limited number of digits (scale) after the decimal separation dot and round the result.
+Note that a ScaledDecimal does not printOn: exactly, however it will storeOn: exactly because the full precision fraction is kept in memory.
+
+This is mostly usefull with denominators being powers of 10.!
 
 !TimeStamp commentStamp: '<historical>' prior: 0!
 This represents a duration of 0 length that marks a particular point in time.!
@@ -445,6 +462,214 @@ upToAnyOf: subcollection do: aBlock
 		| ch |
 		[ self atEnd or: [ (subcollection includes: (ch := self next)) and: [aBlock value: ch. true] ] ] 
 			whileFalse: [ stream nextPut: ch ] ]! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/17/2009 00:20'!
+* aNumber
+	aNumber class = self class ifTrue: [^self asFraction * aNumber asFraction asScaledDecimal: (scale max: aNumber scale)].
+	^self coerce: self asFraction * aNumber! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/17/2009 00:21'!
++ aNumber
+	aNumber class = self class ifTrue: [^self asFraction + aNumber asFraction asScaledDecimal: (scale max: aNumber scale)].
+	^self coerce: self asFraction + aNumber! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/17/2009 00:21'!
+- aNumber
+	aNumber class = self class ifTrue: [^self asFraction - aNumber asFraction asScaledDecimal: (scale max: aNumber scale)].
+	^self coerce: self asFraction - aNumber! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/17/2009 00:21'!
+/ aNumber
+	aNumber class = self class ifTrue: [^self asFraction / aNumber asFraction asScaledDecimal: (scale max: aNumber scale)].
+	^self coerce: self asFraction / aNumber! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 5/17/2009 00:25'!
+< aNumber
+	aNumber class = self class ifTrue: [^self asFraction < aNumber asFraction].
+	^self asFraction < aNumber! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 9/25/2009 23:03'!
+<= aNumber
+	aNumber class = self class ifTrue: [^self asFraction <= aNumber asFraction].
+	^self asFraction <= aNumber! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 5/17/2009 00:25'!
+= aNumber
+	aNumber class = self class ifTrue: [^self asFraction = aNumber asFraction].
+	^self asFraction = aNumber! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 9/25/2009 23:04'!
+> aNumber
+	aNumber class = self class ifTrue: [^self asFraction > aNumber asFraction].
+	^self asFraction > aNumber! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 9/25/2009 23:04'!
+>= aNumber
+	aNumber class = self class ifTrue: [^self asFraction >= aNumber asFraction].
+	^self asFraction >= aNumber! !
+
+!ScaledDecimal methodsFor: 'converting' stamp: 'nice 5/16/2009 23:53'!
+adaptToFraction: rcvr andSend: selector
+	"If I am involved in arithmetic with a Fraction, convert it to a ScaledDecimal."
+
+	^(rcvr asScaledDecimal: scale) perform: selector with: self! !
+
+!ScaledDecimal methodsFor: 'converting' stamp: 'nice 5/16/2009 23:42'!
+adaptToInteger: rcvr andSend: selector
+	"If I am involved in arithmetic with an Integer, convert it to a ScaledDecimal."
+
+	^(rcvr asScaledDecimal: scale) perform: selector with: self! !
+
+!ScaledDecimal methodsFor: 'converting' stamp: 'nice 5/17/2009 00:19'!
+asFraction	
+	"Convert the receiver to a Fraction.
+	Avoid using numerator / denominator to save a useless and costly gcd: computation"
+
+	^denominator = 1
+		ifTrue: [numerator]
+		ifFalse: [Fraction numerator: numerator denominator: denominator]! !
+
+!ScaledDecimal methodsFor: 'private' stamp: 'nice 5/17/2009 00:21'!
+coerce: aNumber
+	"Note: this quick hack could be replaced by double dispatching"
+	
+	aNumber class = self class ifTrue: [^self class newFromNumber: aNumber scale: (scale max: aNumber scale)].
+	(aNumber isFraction or: [aNumber isInteger]) ifTrue: [^self class newFromNumber: aNumber scale: scale].
+	^aNumber! !
+
+!ScaledDecimal methodsFor: 'testing' stamp: 'nice 5/17/2009 00:01'!
+isFraction
+	"Though kind of Fraction, pretend we are not a Fraction to let coercion works correctly"
+	
+	^false! !
+
+!ScaledDecimal methodsFor: 'testing' stamp: 'nice 5/16/2009 21:11'!
+isLiteral
+	"Answer if this number could be a well behaved literal.
+	Well, it would only if evaluating back to self.
+	This is not the case of all ScaledDecimals.
+	Some have an infinite precision and would need an infinite number of digits to print literally.
+	Try for example (3.00s2 reciprocal)."
+	
+	^denominator = 1 "first test trivial case before engaging arithmetic"
+		or: ["Exactly we should test:
+				(numerator * (10 raisedTo; scale)) \\ denominator = 0.
+				But since we can assume fraction is reduced already this will be simply:"
+			(10 raisedTo: scale) \\ denominator = 0]! !
+
+!ScaledDecimal methodsFor: 'accessing' stamp: 'StephaneDucasse 10/15/2011 20:37'!
+isSelfEvaluating
+    "Not all scaled decimal are self evaluating, because they print rounded digits."
+    ^self isLiteral! !
+
+!ScaledDecimal methodsFor: 'comparing' stamp: 'nice 8/28/2008 19:18'!
+literalEqual: other
+	"Testing equality is not enough.
+	It is also necessary to test number of decimal places (scale).
+	Otherwise we cannot compile both literals 0.5s1 and 0.50s2 in the same method"
+	
+	^(super literalEqual: other) and: [self scale = other scale]! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/16/2009 21:01'!
+negated
+	^self class newFromNumber: super negated scale: scale! !
+
+!ScaledDecimal methodsFor: 'mathematical functions' stamp: 'nice 10/14/2011 22:21'!
+nthRoot: anInteger
+	"Answer the nth root of the receiver.
+	Preserve receiver class and scale if answer is exact.
+	Otherwise, answer a Float to denote inexactness."
+	| nthRoot |
+	nthRoot := self asFraction nthRoot: anInteger.
+	^nthRoot isFloat
+		ifTrue: [nthRoot]
+		ifFalse: [nthRoot asScaledDecimal: scale]! !
+
+!ScaledDecimal methodsFor: 'printing' stamp: 'nice 3/29/2011 22:39'!
+printOn: aStream
+	"Append an approximated representation of the receiver on aStream.
+	Use prescribed number of digits after decimal point (the scale) using a rounding operation if not exact"
+	
+	self printOn: aStream showingDecimalPlaces: scale.
+
+	"Append a scale specification so that the number can be recognized as a ScaledDecimal"
+	aStream nextPut: $s; print: scale.! !
+
+!ScaledDecimal methodsFor: 'printing' stamp: 'nice 5/16/2009 21:31'!
+printOn: aStream base: base
+	base = 10 ifFalse: [self error: 'ScaledDecimals should be printed only in base 10'].
+	^self printOn: aStream! !
+
+!ScaledDecimal methodsFor: 'mathematical functions' stamp: 'nice 5/16/2009 21:06'!
+raisedTo: aNumber
+	^self coerce: (super raisedTo: aNumber)! !
+
+!ScaledDecimal methodsFor: 'mathematical functions' stamp: 'nice 5/16/2009 21:15'!
+raisedToInteger: aNumber
+	^self class newFromNumber: (super raisedToInteger: aNumber) scale: scale! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/16/2009 21:01'!
+reciprocal
+	^self class newFromNumber: super reciprocal scale: scale! !
+
+!ScaledDecimal methodsFor: 'accessing' stamp: 'nice 5/16/2009 20:56'!
+scale
+	^scale! !
+
+!ScaledDecimal methodsFor: 'private' stamp: 'nice 5/16/2009 20:54'!
+setNumerator: n denominator: d scale: s
+
+	self setNumerator: n denominator: d.
+	scale := s! !
+
+!ScaledDecimal methodsFor: 'mathematical functions' stamp: 'nice 10/14/2011 22:02'!
+sqrt
+	"Answer the square root of the receiver.
+	Preserve receiver class and scale if answer is exact.
+	Otherwise, answer a Float to denote inexactness."
+	| squareRoot |
+	squareRoot := self asFraction sqrt.
+	^squareRoot isFloat
+		ifTrue: [squareRoot]
+		ifFalse: [squareRoot asScaledDecimal: scale]! !
+
+!ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/16/2009 21:01'!
+squared
+	^self class newFromNumber: super squared scale: scale! !
+
+!ScaledDecimal methodsFor: 'printing' stamp: 'BernardoContreras 11/6/2011 17:02'!
+storeOn: aStream 
+	"ScaledDecimal sometimes have more digits than they print (potentially an infinity).
+	In this case, do not use printOn: because it would loose some extra digits"
+	
+	self shouldBePrintedAsLiteral
+		ifTrue: [self printOn: aStream]
+		ifFalse: [aStream
+			nextPut: $(;
+		 	store: numerator;
+			nextPut: $/;
+			store: denominator;
+			nextPut: $s;
+			store: scale;
+			nextPut: $)]! !
+
+!ScaledDecimal class methodsFor: 'instance creation' stamp: 'nice 5/16/2009 22:23'!
+newFromNumber: aNumber scale: anInteger
+	| aFraction |
+	aFraction := aNumber asFraction.
+	^aFraction isFraction
+		ifTrue: [self new setNumerator: aFraction numerator denominator: aFraction denominator scale: anInteger]
+		ifFalse: [self new setNumerator: aFraction denominator: 1 scale: anInteger]! !
+
+!ScaledDecimal class methodsFor: 'instance creation' stamp: 'nice 5/16/2009 22:36'!
+readFrom: stringOrStream 
+	"Answer a decimal number as described on stringOrStream.
+	The number may not include a leading radix specification, as in 16rFADE,
+	nor an exponent like 1.0e-3
+	It might have a scale specification at end or not like 10.3s2
+	If not, number of digits after decimal point will be used as scale"
+	
+	^(SqNumberParser on: stringOrStream) nextScaledDecimal! !
 
 !SequenceableCollection class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:07'!
 new: newSize streamContents: blockWithArg
