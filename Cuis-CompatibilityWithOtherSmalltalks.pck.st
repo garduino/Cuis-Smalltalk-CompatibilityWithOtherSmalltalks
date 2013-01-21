@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1561] on 20 January 2013 at 3:33:55 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1561] on 21 January 2013 at 3:03:36 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -1159,6 +1159,11 @@ timestampClass
 asDateAndTime
 
 	^ start ! !
+
+!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/21/2013 13:44'!
+day
+	"Answer the day of the year represented by the receiver."
+	^ self dayOfYear! !
 
 !Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:02'!
 starting: aDateAndTime 
