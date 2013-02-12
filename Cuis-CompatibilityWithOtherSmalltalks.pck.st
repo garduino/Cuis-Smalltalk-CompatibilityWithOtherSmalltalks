@@ -1,5 +1,15 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1590] on 12 February 2013 at 3:24:26 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1590] on 12 February 2013 at 4:22:08 pm'!
 'Description Please enter a description for this package '!
+!classDefinition: #GIFReadWriter category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+ImageReadWriter subclass: #GIFReadWriter
+	instanceVariableNames: 'width height bitsPerPixel colorPalette rowByteSize xpos ypos pass interlace codeSize clearCode eoiCode freeCode maxCode prefixTable suffixTable remainBitCount bufByte bufStream transparentIndex mapOf32 localColorTable delay loopCount offset'
+	classVariableNames: 'Extension ImageSeparator Terminator'
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'GIFReadWriter class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+GIFReadWriter class
+	instanceVariableNames: ''!
+
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
 	instanceVariableNames: 'binary position'
@@ -50,6 +60,11 @@ TestCase subclass: #TimeStampTest
 TimeStampTest class
 	instanceVariableNames: ''!
 
+
+!GIFReadWriter commentStamp: '<historical>' prior: 0!
+Copyright (c) Kazuki Yasumatsu, 1995. All rights reserved.
+
+Used with permission.  Modified for use in Squeak.!
 
 !NullStream commentStamp: 'ar 2/25/2010 14:49' prior: 0!
 NullStream is a stream generating and consuming an infinite number of elements. It can be used as an equivalent of /dev/null or for performance benchmarks.!
@@ -102,6 +117,10 @@ asDictionary
 contains: aBlock
 	"VW compatibility"
 	^self anySatisfy: aBlock! !
+
+!ColorForm methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:20'!
+isColorForm
+	^true! !
 
 !Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:08'!
 asSeconds
@@ -181,6 +200,628 @@ pathFromUrl: aFileUrl
 			first ifTrue: [ s nextPut: self pathNameDelimiter ].
 			first := true.
 			s nextPutAll: p ] ].! !
+
+!GIFReadWriter methodsFor: 'private'!
+checkCodeSize
+	(freeCode > maxCode and: [codeSize < 12])
+		ifTrue:
+			[codeSize := codeSize + 1.
+			maxCode := (1 bitShift: codeSize) - 1]! !
+
+!GIFReadWriter methodsFor: 'stream access' stamp: 'bf 5/29/2003 01:23'!
+close
+	"Write terminator"
+	self nextPut: Terminator.
+	^super close! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: 'bf 5/29/2003 01:43'!
+delay: aNumberOrNil
+	"Set delay for next image in hundredth (1/100) of seconds"
+	delay := aNumberOrNil! !
+
+!GIFReadWriter methodsFor: 'private-packing'!
+fillBuffer
+	| packSize |
+	packSize := self next.
+	bufStream := ReadStream on: (self next: packSize)! !
+
+!GIFReadWriter methodsFor: 'private-bits access'!
+flushBits
+	remainBitCount = 0 ifFalse:
+		[self nextBytePut: bufByte.
+		remainBitCount := 0].
+	self flushBuffer! !
+
+!GIFReadWriter methodsFor: 'private-packing'!
+flushBuffer
+	bufStream isEmpty ifTrue: [^self].
+	self nextPut: bufStream size.
+	self nextPutAll: bufStream contents.
+	bufStream := WriteStream on: (ByteArray new: 256)! !
+
+!GIFReadWriter methodsFor: 'private-encoding'!
+flushCode
+	self flushBits! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: 'bf 5/29/2003 01:39'!
+loopCount: aNumber
+	"Set looping. This must be done before any image is written!!"
+	loopCount := aNumber! !
+
+!GIFReadWriter methodsFor: 'private-bits access'!
+nextBits
+	| integer readBitCount shiftCount byte |
+	integer := 0.
+	remainBitCount = 0
+		ifTrue:
+			[readBitCount := 8.
+			shiftCount := 0]
+		ifFalse:
+			[readBitCount := remainBitCount.
+			shiftCount := remainBitCount - 8].
+	[readBitCount < codeSize]
+		whileTrue:
+			[byte := self nextByte.
+			byte == nil ifTrue: [^eoiCode].
+			integer := integer + (byte bitShift: shiftCount).
+			shiftCount := shiftCount + 8.
+			readBitCount := readBitCount + 8].
+	(remainBitCount := readBitCount - codeSize) = 0
+		ifTrue:	[byte := self nextByte]
+		ifFalse:	[byte := self peekByte].
+	byte == nil ifTrue: [^eoiCode].
+	^(integer + (byte bitShift: shiftCount)) bitAnd: maxCode! !
+
+!GIFReadWriter methodsFor: 'private-bits access'!
+nextBitsPut: anInteger
+	| integer writeBitCount shiftCount |
+	shiftCount := 0.
+	remainBitCount = 0
+		ifTrue:
+			[writeBitCount := 8.
+			integer := anInteger]
+		ifFalse:
+			[writeBitCount := remainBitCount.
+			integer := bufByte + (anInteger bitShift: 8 - remainBitCount)].
+	[writeBitCount < codeSize]
+		whileTrue:
+			[self nextBytePut: ((integer bitShift: shiftCount) bitAnd: 255).
+			shiftCount := shiftCount - 8.
+			writeBitCount := writeBitCount + 8].
+	(remainBitCount := writeBitCount - codeSize) = 0
+		ifTrue: [self nextBytePut: (integer bitShift: shiftCount)]
+		ifFalse: [bufByte := integer bitShift: shiftCount].
+	^anInteger! !
+
+!GIFReadWriter methodsFor: 'private-packing'!
+nextByte
+	bufStream atEnd
+		ifTrue:
+			[self atEnd ifTrue: [^nil].
+			self fillBuffer].
+	^bufStream next! !
+
+!GIFReadWriter methodsFor: 'private-packing'!
+nextBytePut: aByte
+	bufStream nextPut: aByte.
+	bufStream size >= 254 ifTrue: [self flushBuffer]! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: 'sd 1/30/2004 15:18'!
+nextImage
+	"Read in the next GIF image from the stream. Read it all into
+memory first for speed."
+
+	| f thisImageColorTable |
+	stream class == ReadWriteStream ifFalse: [
+		stream binary.
+		self on: (ReadWriteStream with: (stream contentsOfEntireFile))].
+
+	localColorTable := nil.
+	self readHeader.
+	f := self readBody.
+	self close.
+	f == nil ifTrue: [^ self error: 'corrupt GIF file'].
+
+	thisImageColorTable := localColorTable ifNil: [colorPalette].
+	transparentIndex ifNotNil: [
+		transparentIndex + 1 > thisImageColorTable size ifTrue: [
+			thisImageColorTable := thisImageColorTable 
+				forceTo: transparentIndex + 1 
+				paddingWith: Color white
+		].
+		thisImageColorTable at: transparentIndex + 1 put: Color transparent
+	].
+	f colors: thisImageColorTable.
+	^ f
+! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: 'ar 10/24/2005 22:52'!
+nextPutImage: aForm
+
+	| reduced tempForm |
+	aForm unhibernate.
+	aForm depth > 8 ifTrue:[
+		reduced := aForm colorReduced.  "minimize depth"
+		reduced depth > 8 ifTrue: [
+			"Not enough color space; do it the hard way."
+			reduced := reduced asFormOfDepth: 8].
+	] ifFalse:[reduced := aForm].
+	reduced depth < 8 ifTrue: [
+		"writeBitData: expects depth of 8"
+		tempForm := reduced class extent: reduced extent depth: 8.
+		(reduced isColorForm) ifTrue:[
+			tempForm
+				copyBits: reduced boundingBox
+				from: reduced at: 0@0
+				clippingBox: reduced boundingBox
+				rule: Form over
+				fillColor: nil
+				map: nil.
+			tempForm colors: reduced colors.
+		] ifFalse: [reduced displayOn: tempForm].
+		reduced := tempForm.
+	].
+	(reduced isColorForm) ifTrue:[
+		(reduced colorsUsed includes: Color transparent) ifTrue: [
+			transparentIndex := (reduced colors indexOf: Color transparent) - 1.
+		]
+	] ifFalse: [transparentIndex := nil].
+	width := reduced width.
+	height := reduced height.
+	bitsPerPixel := reduced depth.
+	colorPalette := reduced colormapIfNeededForDepth: 32.
+	interlace := false.
+	self writeHeader.
+	self writeBitData: reduced bits.
+! !
+
+!GIFReadWriter methodsFor: 'private-packing'!
+peekByte
+	bufStream atEnd
+		ifTrue:
+			[self atEnd ifTrue: [^nil].
+			self fillBuffer].
+	^bufStream peek! !
+
+!GIFReadWriter methodsFor: 'private-decoding' stamp: 'mir 11/19/2003 12:19'!
+readBitData
+	"using modified Lempel-Ziv Welch algorithm."
+
+	| outCodes outCount bitMask initCodeSize code curCode oldCode inCode finChar i bytes f c packedBits hasLocalColor localColorSize maxOutCodes |
+
+	maxOutCodes := 4096.
+	offset := self readWord@self readWord. "Image Left@Image Top"
+	width := self readWord.
+	height := self readWord.
+
+	"---
+	Local Color Table Flag        1 Bit
+	Interlace Flag                1 Bit
+	Sort Flag                     1 Bit
+	Reserved                      2 Bits
+	Size of Local Color Table     3 Bits
+	----"
+	packedBits := self next.
+	interlace := (packedBits bitAnd: 16r40) ~= 0.
+	hasLocalColor := (packedBits bitAnd: 16r80) ~= 0.
+	localColorSize := 1 bitShift: ((packedBits bitAnd: 16r7) + 1).
+	hasLocalColor ifTrue: [localColorTable := self readColorTable: localColorSize].
+
+	pass := 0.
+	xpos := 0.
+	ypos := 0.
+	rowByteSize := ((width + 3) // 4) * 4.
+	remainBitCount := 0.
+	bufByte := 0.
+	bufStream := ReadStream on: ByteArray new.
+
+	outCodes := ByteArray new: maxOutCodes + 1.
+	outCount := 0.
+	bitMask := (1 bitShift: bitsPerPixel) - 1.
+	prefixTable := Array new: 4096.
+	suffixTable := Array new: 4096.
+
+	initCodeSize := self next.
+
+	self setParameters: initCodeSize.
+	bitsPerPixel > 8 ifTrue: [^self error: 'never heard of a GIF that deep'].
+	bytes := ByteArray new: rowByteSize * height.
+	[(code := self readCode) = eoiCode] whileFalse:
+		[code = clearCode
+			ifTrue:
+				[self setParameters: initCodeSize.
+				curCode := oldCode := code := self readCode.
+				finChar := curCode bitAnd: bitMask.
+				"Horrible hack to avoid running off the end of the bitmap.  Seems to cure problem reading some gifs!!? tk 6/24/97 20:16"
+				xpos = 0 ifTrue: [
+						ypos < height ifTrue: [
+							bytes at: (ypos * rowByteSize) + xpos + 1 put: finChar]]
+					ifFalse: [bytes at: (ypos * rowByteSize) + xpos + 1 put: finChar].
+				self updatePixelPosition]
+			ifFalse:
+				[curCode := inCode := code.
+				curCode >= freeCode ifTrue:
+					[curCode := oldCode.
+					outCodes at: (outCount := outCount + 1) put: finChar].
+				[curCode > bitMask] whileTrue:
+					[outCount > maxOutCodes
+						ifTrue: [^self error: 'corrupt GIF file (OutCount)'].
+					outCodes at: (outCount := outCount + 1)
+						put: (suffixTable at: curCode + 1).
+					curCode := prefixTable at: curCode + 1].
+				finChar := curCode bitAnd: bitMask.
+				outCodes at: (outCount := outCount + 1) put: finChar.
+				i := outCount.
+				[i > 0] whileTrue:
+					["self writePixel: (outCodes at: i) to: bits"
+					bytes at: (ypos * rowByteSize) + xpos + 1 put: (outCodes at: i).
+					self updatePixelPosition.
+					i := i - 1].
+				outCount := 0.
+				prefixTable at: freeCode + 1 put: oldCode.
+				suffixTable at: freeCode + 1 put: finChar.
+				oldCode := inCode.
+				freeCode := freeCode + 1.
+				self checkCodeSize]].
+	prefixTable := suffixTable := nil.
+
+	f := ColorForm extent: width@height depth: 8.
+	f bits copyFromByteArray: bytes.
+	"Squeak can handle depths 1, 2, 4, and 8"
+	bitsPerPixel > 4 ifTrue: [^ f].
+	"reduce depth to save space"
+	c := ColorForm extent: width@height
+		depth: (bitsPerPixel = 3 ifTrue: [4] ifFalse: [bitsPerPixel]).
+	f displayOn: c.
+	^ c
+! !
+
+!GIFReadWriter methodsFor: 'private-decoding' stamp: 'KLC 1/25/2004 14:04'!
+readBody
+	"Read the GIF blocks. Modified to return a form.  "
+
+	| form extype block blocksize packedFields delay1 |
+	form := nil.
+	[stream atEnd] whileFalse: [
+		block := self next.
+		block = Terminator ifTrue: [^ form].
+		block = ImageSeparator ifTrue: [
+			form isNil
+				ifTrue: [form := self readBitData]
+				ifFalse: [self skipBitData].
+		] ifFalse: [
+			block = Extension
+				ifFalse: [^ form "^ self error: 'Unknown block type'"].
+			"Extension block"
+			extype := self next.	"extension type"
+			extype = 16rF9 ifTrue: [  "graphics control"
+				self next = 4 ifFalse: [^ form "^ self error: 'corrupt GIF file'"].
+				"====
+				Reserved                      3 Bits
+				Disposal Method               3 Bits
+				User Input Flag               1 Bit
+				Transparent Color Flag        1 Bit
+				==="
+ 
+				packedFields := self next.
+				delay1 := self next.	"delay time 1"
+				delay := (self next*256 + delay1) *10.	 "delay time 2"
+				transparentIndex := self next.
+				(packedFields bitAnd: 1) = 0 ifTrue: [transparentIndex := nil].
+				self next = 0 ifFalse: [^ form "^ self error: 'corrupt GIF file'"].
+			] ifFalse: [
+				"Skip blocks"
+				[(blocksize := self next) > 0]
+					whileTrue: [
+						"Read the block and ignore it and eat the block terminator"
+						self next: blocksize]]]]! !
+
+!GIFReadWriter methodsFor: 'private-decoding'!
+readCode
+	^self nextBits! !
+
+!GIFReadWriter methodsFor: 'private-decoding' stamp: 'RAA 4/25/2001 08:48'!
+readColorTable: numberOfEntries
+
+	| array r g b |
+
+	array := Array new: numberOfEntries.
+	1 to: array size do: [ :i |
+		r := self next.  
+		g := self next.  
+		b := self next.
+		array at: i put: (Color r: r g: g b: b range: 255)
+	].
+	^array! !
+
+!GIFReadWriter methodsFor: 'private-decoding' stamp: 'RAA 4/25/2001 08:49'!
+readHeader
+	| is89 byte hasColorMap |
+	(self hasMagicNumber: 'GIF87a' asByteArray)
+		ifTrue: [is89 := false]
+		ifFalse: [(self hasMagicNumber: 'GIF89a' asByteArray)
+			ifTrue: [is89 := true]
+			ifFalse: [^ self error: 'This does not appear to be a GIF file']].
+	self readWord.	"skip Screen Width"
+	self readWord.	"skip Screen Height"
+	byte := self next.
+	hasColorMap := (byte bitAnd: 16r80) ~= 0.
+	bitsPerPixel := (byte bitAnd: 7) + 1.
+	byte := self next.	"skip background color."
+	self next ~= 0
+		ifTrue: [is89
+			ifFalse: [^self error: 'corrupt GIF file (screen descriptor)']].
+	hasColorMap
+		ifTrue:
+			[colorPalette := self readColorTable: (1 bitShift: bitsPerPixel)]
+		ifFalse:
+			["Transcript cr; show: 'GIF file does not have a color map.'."
+			colorPalette := nil "Palette monochromeDefault"].! !
+
+!GIFReadWriter methodsFor: 'private-encoding' stamp: 'tk 9/14/97 16:25'!
+readPixelFrom: bits
+	"Since bits is a Bitmap with 32 bit values, watch out for the
+padding at the end of each row.  But, GIF format already wants padding to
+32 bit boundary!!  OK as is.  tk 9/14/97"
+
+	| pixel |
+	ypos >= height ifTrue: [^nil].
+	pixel := bits byteAt: (ypos * rowByteSize + xpos + 1).
+	self updatePixelPosition.
+	^pixel! !
+
+!GIFReadWriter methodsFor: 'private-decoding'!
+readWord
+	^self next + (self next bitShift: 8)! !
+
+!GIFReadWriter methodsFor: 'private'!
+setParameters: initCodeSize
+	clearCode := 1 bitShift: initCodeSize.
+	eoiCode := clearCode + 1.
+	freeCode := clearCode + 2.
+	codeSize := initCodeSize + 1.
+	maxCode := (1 bitShift: codeSize) - 1! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: '6/18/97 13:18 '!
+setStream: aStream
+	"Feed it in from an existing source"
+	stream := aStream! !
+
+!GIFReadWriter methodsFor: 'private-decoding'!
+skipBitData
+	| misc blocksize |
+	self readWord.  "skip Image Left"
+	self readWord.  "skip Image Top"
+	self readWord.  "width"
+	self readWord.  "height"
+	misc := self next.
+	(misc bitAnd: 16r80) = 0 ifFalse: [ "skip colormap"
+		1 to: (1 bitShift: (misc bitAnd: 7) + 1) do: [:i |
+			self next; next; next]].
+	self next.  "minimum code size"
+	[(blocksize := self next) > 0]
+		whileTrue: [self next: blocksize]! !
+
+!GIFReadWriter methodsFor: 'accessing' stamp: 'di 9/15/1998 09:53'!
+understandsImageFormat
+	^('abc' collect: [:x | stream next asCharacter]) = 'GIF'! !
+
+!GIFReadWriter methodsFor: 'private'!
+updatePixelPosition
+	(xpos := xpos + 1) >= width ifFalse: [^self].
+	xpos := 0.
+	interlace
+		ifFalse: [ypos := ypos + 1. ^self].
+	pass = 0 ifTrue:
+		[(ypos := ypos + 8) >= height
+			ifTrue:
+				[pass := pass + 1.
+				ypos := 4].
+		^self].
+	pass = 1 ifTrue:
+		[(ypos := ypos + 8) >= height
+			ifTrue:
+				[pass := pass + 1.
+				ypos := 2].
+		^self].
+	pass = 2 ifTrue:
+		[(ypos := ypos + 4) >= height
+			ifTrue:
+				[pass := pass + 1.
+				ypos := 1].
+		^self].
+	pass = 3 ifTrue:
+		[ypos := ypos + 2.
+		^self].
+
+	^self error: 'can''t happen'! !
+
+!GIFReadWriter methodsFor: 'private-encoding' stamp: 'bf 5/29/2003 01:21'!
+writeBitData: bits
+	"using modified Lempel-Ziv Welch algorithm."
+
+	| maxBits maxMaxCode tSize initCodeSize ent tShift fCode pixel index disp nomatch |
+	pass := 0.
+	xpos := 0.
+	ypos := 0.
+	rowByteSize := width * 8 + 31 // 32 * 4.
+	remainBitCount := 0.
+	bufByte := 0.
+	bufStream := WriteStream on: (ByteArray new: 256).
+
+	maxBits := 12.
+	maxMaxCode := 1 bitShift: maxBits.
+	tSize := 5003.
+	prefixTable := Array new: tSize.
+	suffixTable := Array new: tSize.
+
+	initCodeSize := bitsPerPixel <= 1 ifTrue: [2] ifFalse: [bitsPerPixel].
+	self nextPut: initCodeSize.
+	self setParameters: initCodeSize.
+
+	tShift := 0.
+	fCode := tSize.
+	[fCode < 65536] whileTrue:
+		[tShift := tShift + 1.
+		fCode := fCode * 2].
+	tShift := 8 - tShift.
+	1 to: tSize do: [:i | suffixTable at: i put: -1].
+
+	self writeCodeAndCheckCodeSize: clearCode.
+	ent := self readPixelFrom: bits.
+	[(pixel := self readPixelFrom: bits) == nil] whileFalse:
+		[
+		fCode := (pixel bitShift: maxBits) + ent.
+		index := ((pixel bitShift: tShift) bitXor: ent) + 1.
+		(suffixTable at: index) = fCode
+			ifTrue: [ent := prefixTable at: index]
+			ifFalse:
+				[nomatch := true.
+				(suffixTable at: index) >= 0
+					ifTrue:
+						[disp := tSize - index + 1.
+						index = 1 ifTrue: [disp := 1].
+						"probe"
+						[(index := index - disp) < 1 ifTrue: [index := index + tSize].
+						(suffixTable at: index) = fCode
+							ifTrue:
+								[ent := prefixTable at: index.
+								nomatch := false.
+								"continue whileFalse:"].
+						nomatch and: [(suffixTable at: index) > 0]]
+							whileTrue: ["probe"]].
+				"nomatch"
+				nomatch ifTrue:
+					[self writeCodeAndCheckCodeSize: ent.
+					ent := pixel.
+					freeCode < maxMaxCode
+						ifTrue:
+							[prefixTable at: index put: freeCode.
+							suffixTable at: index put: fCode.
+							freeCode := freeCode + 1]
+						ifFalse:
+							[self writeCodeAndCheckCodeSize: clearCode.
+							1 to: tSize do: [:i | suffixTable at: i put: -1].
+							self setParameters: initCodeSize]]]].
+	prefixTable := suffixTable := nil.
+	self writeCodeAndCheckCodeSize: ent.
+	self writeCodeAndCheckCodeSize: eoiCode.
+	self flushCode.
+
+	self nextPut: 0.	"zero-length packet"
+! !
+
+!GIFReadWriter methodsFor: 'private-encoding'!
+writeCode: aCode
+	self nextBitsPut: aCode! !
+
+!GIFReadWriter methodsFor: 'private-encoding'!
+writeCodeAndCheckCodeSize: aCode
+	self writeCode: aCode.
+	self checkCodeSize! !
+
+!GIFReadWriter methodsFor: 'private-encoding' stamp: 'bf 5/29/2003 01:38'!
+writeHeader
+
+	| byte |
+	stream position = 0 ifTrue: [
+		"For first image only"
+		self nextPutAll: 'GIF89a' asByteArray.
+		self writeWord: width.	"Screen Width"
+		self writeWord: height.	"Screen Height"
+		byte := 16r80.  "has color map"
+		byte := byte bitOr: ((bitsPerPixel - 1) bitShift: 5).  "color resolution"
+		byte := byte bitOr: bitsPerPixel - 1.  "bits per pixel"
+		self nextPut: byte.
+		self nextPut: 0.		"background color."
+		self nextPut: 0.		"reserved"
+		colorPalette do: [:pixelValue |
+			self	nextPut: ((pixelValue bitShift: -16) bitAnd: 255);
+				nextPut: ((pixelValue bitShift: -8) bitAnd: 255);
+				nextPut: (pixelValue bitAnd: 255)].
+		loopCount notNil ifTrue: [
+			"Write a Netscape loop chunk"
+			self nextPut: Extension.
+			self nextPutAll: #(255 11 78 69 84 83 67 65 80 69 50 46 48 3 1) asByteArray.
+			self writeWord: loopCount.
+			self nextPut: 0]].
+
+	delay notNil | transparentIndex notNil ifTrue: [
+		self nextPut: Extension;
+			nextPutAll: #(16rF9 4) asByteArray;
+			nextPut: (transparentIndex isNil ifTrue: [0] ifFalse: [9]);
+			writeWord: (delay isNil ifTrue: [0] ifFalse: [delay]);
+			nextPut: (transparentIndex isNil ifTrue: [0] ifFalse: [transparentIndex]);
+			nextPut: 0].
+
+	self nextPut: ImageSeparator.
+	self writeWord: 0.		"Image Left"
+	self writeWord: 0.		"Image Top"
+	self writeWord: width.	"Image Width"
+	self writeWord: height.	"Image Height"
+	byte := interlace ifTrue: [16r40] ifFalse: [0].
+	self nextPut: byte.
+! !
+
+!GIFReadWriter methodsFor: 'private-encoding'!
+writeWord: aWord
+	self nextPut: (aWord bitAnd: 255).
+	self nextPut: ((aWord bitShift: -8) bitAnd: 255).
+	^aWord! !
+
+!GIFReadWriter class methodsFor: 'examples' stamp: 'bf 5/29/2003 01:56'!
+exampleAnim
+	"GIFReadWriter exampleAnim"
+
+	| writer extent center |
+	writer := GIFReadWriter on: (FileStream newFileNamed: 'anim.gif').
+	writer loopCount: 20.		"Repeat 20 times"
+	writer delay: 10.		"Wait 10/100 seconds"
+	extent := 42@42.
+	center := extent / 2.
+	Cursor write showWhile: [
+		[2 to: center x - 1 by: 2 do: [:r |
+			"Make a fancy anim without using Canvas - inefficient as hell"
+			| image |
+			image := ColorForm extent: extent depth: 8.
+			0.0 to: 359.0 do: [:theta | image colorAt: (center + (Point r: r degrees: theta)) rounded put: Color red].
+			writer nextPutImage: image]
+		]	ensure: [writer close]].! !
+
+!GIFReadWriter class methodsFor: 'examples' stamp: 'nk 7/30/2004 21:40'!
+grabScreenAndSaveOnDisk
+	"GIFReaderWriter grabScreenAndSaveOnDisk"
+
+	| form fileName |
+	form := Form fromUser.
+	form bits size = 0 ifTrue: [^Beeper beep].
+	fileName := FileDirectory default nextNameFor: 'Squeak' extension: 'gif'.
+	Utilities informUser: 'Writing ' , fileName
+		during: [GIFReadWriter putForm: form onFileNamed: fileName]! !
+
+!GIFReadWriter class methodsFor: 'class initialization'!
+initialize
+	"GIFReadWriter initialize"
+
+	ImageSeparator := $, asInteger.
+	Extension := $!! asInteger.
+	Terminator := $; asInteger.
+! !
+
+!GIFReadWriter class methodsFor: 'image reading/writing' stamp: 'asm 12/11/2003 21:29'!
+typicalFileExtensions
+	"Answer a collection of file extensions (lowercase) which files that I can 
+	read might commonly have"
+
+	self
+		allSubclasses detect: [:cls | cls wantsToHandleGIFs ]
+					 ifNone: ["if none of my subclasses wants , then i''ll have to do"
+							^ #('gif' )].
+	^ #( )! !
+
+!GIFReadWriter class methodsFor: 'image reading/writing' stamp: 'asm 12/11/2003 21:29'!
+wantsToHandleGIFs
+	^ false! !
 
 !NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
 ascii
@@ -369,6 +1010,10 @@ new
 	"Creates a new instance"
 
 	^self basicNew initialize! !
+
+!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:21'!
+isColorForm
+	^false! !
 
 !Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 19:14'!
 readFromString: aString 
@@ -1205,3 +1850,4 @@ crlf
 	The Cuis convention is to use lf on output."
 
 	self nextPutAll: String newLineString! !
+GIFReadWriter initialize!
