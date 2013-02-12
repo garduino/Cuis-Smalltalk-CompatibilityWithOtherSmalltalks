@@ -1,4 +1,4 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1561] on 21 January 2013 at 3:03:36 pm'!
+'From Cuis 4.1 of 12 December 2012 [latest update: #1590] on 12 February 2013 at 3:24:26 pm'!
 'Description Please enter a description for this package '!
 !classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 Stream subclass: #NullStream
@@ -1185,6 +1185,13 @@ cr
 	Now, finish the current incomplete entry."
 
 	self finishEntry! !
+
+!UndefinedObject methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 15:23'!
+ifNotNilDo: aBlock
+	"Override to do nothing."
+
+	^ self
+! !
 
 !WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 11:48'!
 cr
