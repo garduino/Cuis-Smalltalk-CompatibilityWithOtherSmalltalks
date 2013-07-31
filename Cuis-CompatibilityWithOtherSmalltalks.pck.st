@@ -1,5 +1,7 @@
 'From Cuis 4.1 of 12 December 2012 [latest update: #1590] on 12 February 2013 at 4:22:08 pm'!
 'Description Please enter a description for this package '!
+!provides: 'Cuis-CompatibilityWithOtherSmalltalks' 1 0!
+!requires: 'Network-Kernel' nil nil!
 !classDefinition: #GIFReadWriter category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 ImageReadWriter subclass: #GIFReadWriter
 	instanceVariableNames: 'width height bitsPerPixel colorPalette rowByteSize xpos ypos pass interlace codeSize clearCode eoiCode freeCode maxCode prefixTable suffixTable remainBitCount bufByte bufStream transparentIndex mapOf32 localColorTable delay loopCount offset'
