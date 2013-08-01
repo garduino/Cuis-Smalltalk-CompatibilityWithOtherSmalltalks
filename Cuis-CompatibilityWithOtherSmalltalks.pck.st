@@ -1,7 +1,7 @@
-'From Cuis 4.1 of 12 December 2012 [latest update: #1590] on 12 February 2013 at 4:22:08 pm'!
+'From Cuis 4.2 of 25 July 2013 [latest update: #1782] on 1 August 2013 at 11:54:17.513197 am'!
 'Description Please enter a description for this package '!
 !provides: 'Cuis-CompatibilityWithOtherSmalltalks' 1 0!
-!requires: 'Network-Kernel' nil nil!
+!requires: 'Network-Kernel' nil nil nil!
 !classDefinition: #GIFReadWriter category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 ImageReadWriter subclass: #GIFReadWriter
 	instanceVariableNames: 'width height bitsPerPixel colorPalette rowByteSize xpos ypos pass interlace codeSize clearCode eoiCode freeCode maxCode prefixTable suffixTable remainBitCount bufByte bufStream transparentIndex mapOf32 localColorTable delay loopCount offset'
@@ -12,24 +12,14 @@ ImageReadWriter subclass: #GIFReadWriter
 GIFReadWriter class
 	instanceVariableNames: ''!
 
-!classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-Stream subclass: #NullStream
-	instanceVariableNames: 'binary position'
+!classDefinition: #TimeStamp category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+DateAndTime subclass: #TimeStamp
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
-!classDefinition: 'NullStream class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-NullStream class
-	instanceVariableNames: ''!
-
-!classDefinition: #Password category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-Object subclass: #Password
-	instanceVariableNames: 'cache sequence'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
-!classDefinition: 'Password class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-Password class
+!classDefinition: 'TimeStamp class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+TimeStamp class
 	instanceVariableNames: ''!
 
 !classDefinition: #ScaledDecimal category: #'Cuis-CompatibilityWithOtherSmalltalks'!
@@ -42,14 +32,24 @@ Fraction subclass: #ScaledDecimal
 ScaledDecimal class
 	instanceVariableNames: ''!
 
-!classDefinition: #TimeStamp category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-DateAndTime subclass: #TimeStamp
-	instanceVariableNames: ''
+!classDefinition: #Password category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Object subclass: #Password
+	instanceVariableNames: 'cache sequence'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
-!classDefinition: 'TimeStamp class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
-TimeStamp class
+!classDefinition: 'Password class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Password class
+	instanceVariableNames: ''!
+
+!classDefinition: #NullStream category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+Stream subclass: #NullStream
+	instanceVariableNames: 'binary position'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Cuis-CompatibilityWithOtherSmalltalks'!
+!classDefinition: 'NullStream class' category: #'Cuis-CompatibilityWithOtherSmalltalks'!
+NullStream class
 	instanceVariableNames: ''!
 
 !classDefinition: #TimeStampTest category: #'Cuis-CompatibilityWithOtherSmalltalks'!
@@ -68,8 +68,15 @@ Copyright (c) Kazuki Yasumatsu, 1995. All rights reserved.
 
 Used with permission.  Modified for use in Squeak.!
 
-!NullStream commentStamp: 'ar 2/25/2010 14:49' prior: 0!
-NullStream is a stream generating and consuming an infinite number of elements. It can be used as an equivalent of /dev/null or for performance benchmarks.!
+!TimeStamp commentStamp: '<historical>' prior: 0!
+This represents a duration of 0 length that marks a particular point in time.!
+
+!ScaledDecimal commentStamp: 'nice 5/16/2009 20:45' prior: 0!
+ScaledDecimal implement a special kind of Fraction that prints in decimal notation.
+It uses a limited number of digits (scale) after the decimal separation dot and round the result.
+Note that a ScaledDecimal does not printOn: exactly, however it will storeOn: exactly because the full precision fraction is kept in memory.
+
+This is mostly usefull with denominators being powers of 10.!
 
 !Password commentStamp: '<historical>' prior: 0!
 "Hold a password.  There are three ways to get the password.
@@ -80,18 +87,178 @@ If the use supplied one during this session, return that.  It is cleared at shut
 
 If sequence is a number, get the server passwords off the disk.  File 'sqk.info' must be in the same folder 'Squeak.sources' file.  Decode the file.  Return the password indexed by sequence."!
 
-!ScaledDecimal commentStamp: 'nice 5/16/2009 20:45' prior: 0!
-ScaledDecimal implement a special kind of Fraction that prints in decimal notation.
-It uses a limited number of digits (scale) after the decimal separation dot and round the result.
-Note that a ScaledDecimal does not printOn: exactly, however it will storeOn: exactly because the full precision fraction is kept in memory.
-
-This is mostly usefull with denominators being powers of 10.!
-
-!TimeStamp commentStamp: '<historical>' prior: 0!
-This represents a duration of 0 length that marks a particular point in time.!
+!NullStream commentStamp: 'ar 2/25/2010 14:49' prior: 0!
+NullStream is a stream generating and consuming an infinite number of elements. It can be used as an equivalent of /dev/null or for performance benchmarks.!
 
 !TimeStampTest commentStamp: 'brp 7/26/2003 22:44' prior: 0!
 This is the unit test for the class TimeStamp.!
+
+!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:21'!
+isColorForm
+	^false! !
+
+!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 19:14'!
+readFromString: aString 
+	"Create an object based on the contents of aString."
+	^ self readFrom: aString readStream! !
+
+!Collection methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 08:00'!
+asDictionary
+
+	^ self as: Dictionary! !
+
+!Collection methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:34'!
+contains: aBlock
+	"VW compatibility"
+	^self anySatisfy: aBlock! !
+
+!SequenceableCollection class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:07'!
+new: newSize streamContents: blockWithArg
+
+	| stream |
+	stream := WriteStream on: (self new: newSize).
+	blockWithArg value: stream.
+	stream position = newSize
+		ifTrue: [ ^stream originalContents ]
+		ifFalse: [ ^stream contents ]! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:59'!
+asByteString
+	"Convert the receiver into a ByteString, if possible"
+	"Do not raise an error if it's not possible, since my use case is usually one in which WideStrings may or may not have been mutated to something representable in a ByteString, and we mostly do this to save space if possible. If the percentage of such cases are small, it may be better to use isOctetString check first to avoid creating String instances"	
+	^self asOctetString! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:58'!
+asOctetString
+	"Convert the receiver into an octet string, if possible"
+	"(IE, I am a WideString containing only character with codePoints < 255, so all of them fit in a latin1-string)."
+	| string |
+	string := String new: self size.
+	1 to: self size do: [:i | string at: i put: (self at: i)].
+	^string! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:47'!
+asTime
+	"Many allowed forms, see Time>>readFrom:"
+
+	^ Time fromString: self.! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:49'!
+asTimeStamp
+	"Convert from obsolete TimeStamp format"
+
+ 	^ TimeStamp fromString: self! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 18:52'!
+charactersExactlyMatching: aString
+	"Do a character-by-character comparison between the receiver and aString.  Return the index of the final character that matched exactly."
+
+	| count |
+	count := self size min: aString size.
+	1 to: count do: [:i | 
+		(self at: i) = (aString at: i) ifFalse: [
+			^ i - 1]].
+	^ count! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:46'!
+encodeForHTTP
+
+	^ self ! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
+subStrings: separators 
+	"Answer an array containing the substrings in the receiver separated 
+	by the elements of separators."
+	| result sourceStream subStringStream |
+	#Collectn.
+	"Changed 2000/04/08 For ANSI <readableString> protocol."
+	(separators isString or: [ separators allSatisfy: [ :element | element isKindOf: Character ] ])
+		ifFalse: [ ^ self error: 'separators must be Characters.' ].
+	sourceStream := self readStream.
+	result := OrderedCollection new.
+	subStringStream := String new writeStream.
+	[ sourceStream atEnd ] whileFalse: [
+		| char |
+		char := sourceStream next.
+		(separators includes: char)
+			ifTrue: [
+				subStringStream isEmpty ifFalse: [
+					result add: subStringStream contents.
+					subStringStream := String new writeStream ] ]
+			ifFalse: [
+				subStringStream nextPut: char ] ].
+	subStringStream isEmpty ifFalse: [
+		result add: subStringStream contents ].
+	^ result asArray! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:45'!
+unescapePercentsWithTextEncoding: encodingName 
+	^ self! !
+
+!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 20:44'!
+withCRs
+	"Return a copy of the receiver in which backslash (\) characters have been replaced with carriage returns."
+
+	^ self collect: [ :c | c = $\ ifTrue: [ Character crCharacter ] ifFalse: [ c ]].! !
+
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
+cr
+	"Answer a string containing a single carriage return character."
+
+	^ self with: Character crCharacter! !
+
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
+crlf
+	"Answer a string containing a carriage return and a linefeed."
+
+	^ self with: Character crCharacter with: Character lfCharacter
+! !
+
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:43'!
+crlfcrlf
+	^self crlf , self crlf.! !
+
+!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
+lf
+	"Answer a string containing a single Lf character."
+
+	^ self with: Character lfCharacter! !
+
+!Set methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 09:14'!
+removeAll
+	self init: array size.! !
+
+!Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
+isDictionary
+	^true! !
+
+!DirectoryEntry class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 14:42'!
+name: name0  creationTime: creationTime  modificationTime: modificationTime   isDirectory: isDirectory  fileSize: fileSize
+	"This is the legacy creation method we are trying to phase out.  Please use #directory:  name:  creationTime:  modificationTime:  fileSize:." 
+	| type |
+	type := isDirectory 
+		ifTrue: [ DirectoryEntryDirectory ]
+		ifFalse: [ DirectoryEntryFile ].
+	^ type
+		directory: nil
+		name: name0  
+		creationTime: creationTime  
+		modificationTime: modificationTime   
+		fileSize: fileSize! !
+
+!ColorForm methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:20'!
+isColorForm
+	^true! !
+
+!FileDirectory methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:48'!
+pathFromUrl: aFileUrl
+	
+	^String streamContents: [ :s | | first |
+		first := false.
+		aFileUrl path do: [ :p |
+			first ifTrue: [ s nextPut: self pathNameDelimiter ].
+			first := true.
+			s nextPutAll: p ] ].! !
 
 !Character methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:41'!
 sameAs: aCharacter 
@@ -109,31 +276,6 @@ lf
 	"Answer the Character representing a linefeed."
 
 	^ self lfCharacter! !
-
-!Collection methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 08:00'!
-asDictionary
-
-	^ self as: Dictionary! !
-
-!Collection methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:34'!
-contains: aBlock
-	"VW compatibility"
-	^self anySatisfy: aBlock! !
-
-!ColorForm methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:20'!
-isColorForm
-	^true! !
-
-!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:08'!
-asSeconds
- 	"Answer the seconds since the Squeak epoch: 1 January 1901"
- 
- 	^ start asSeconds! !
-
-!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:58'!
-subtractDays: dayCount 
-
-	^ (self asDateAndTime - (dayCount days)) asDate! !
 
 !DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:53'!
 asDate
@@ -169,39 +311,113 @@ day
  
  	^ self dayOfYear! !
 
-!Dictionary methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 18:15'!
-isDictionary
-	^true! !
-
-!DirectoryEntry class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 14:42'!
-name: name0  creationTime: creationTime  modificationTime: modificationTime   isDirectory: isDirectory  fileSize: fileSize
-	"This is the legacy creation method we are trying to phase out.  Please use #directory:  name:  creationTime:  modificationTime:  fileSize:." 
-	| type |
-	type := isDirectory 
-		ifTrue: [ DirectoryEntryDirectory ]
-		ifFalse: [ DirectoryEntryFile ].
-	^ type
-		directory: nil
-		name: name0  
-		creationTime: creationTime  
-		modificationTime: modificationTime   
-		fileSize: fileSize! !
-
 !Duration methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 16:54'!
 asSeconds
  	"Answer the number of seconds in the receiver."
  	^ seconds
  ! !
 
-!FileDirectory methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:48'!
-pathFromUrl: aFileUrl
+!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:39'!
+hours
+
+	^ self hour! !
+
+!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:39'!
+minutes
+
+	^ self minute! !
+
+!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:40'!
+seconds
+
+	^ self second! !
+
+!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:59'!
+asDateAndTime
+
+	^ start ! !
+
+!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/21/2013 13:44'!
+day
+	"Answer the day of the year represented by the receiver."
+	^ self dayOfYear! !
+
+!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:02'!
+starting: aDateAndTime 
+
+	^ self starting: aDateAndTime duration: Duration zero ! !
+
+!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:42'!
+starting: aDateAndTime duration: aDuration
+
+	^ self basicNew
+  		start: aDateAndTime asDateAndTime;
+ 		duration: aDuration;
+		yourself.! !
+
+!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 17:08'!
+asSeconds
+ 	"Answer the seconds since the Squeak epoch: 1 January 1901"
+ 
+ 	^ start asSeconds! !
+
+!Date methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:58'!
+subtractDays: dayCount 
+
+	^ (self asDateAndTime - (dayCount days)) asDate! !
+
+!SocketStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:48'!
+crlf
+	"Append a newLine character to the receiver.
+	The Cuis convention is to use lf on output."
+
+	self nextPutAll: String newLineString! !
+
+!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
+upToAnyOf: aCollection 
+	"Answer a subcollection from the current access position to the 
+	occurrence (if any, but not inclusive) of any object in the collection. If 
+	no matching object is found, answer the entire rest of the receiver."
+	^self upToAnyOf: aCollection do: [:matchingObject | ]! !
+
+!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
+upToAnyOf: subcollection do: aBlock
+	"Answer a subcollection from the current access position to the occurrence (if any, but not inclusive) of any object in the collection.
+	Evaluate aBlock with this occurence as argument.
+	If no matching object is found, don't evaluate aBlock and answer the entire rest of the receiver."
 	
-	^String streamContents: [ :s | | first |
-		first := false.
-		aFileUrl path do: [ :p |
-			first ifTrue: [ s nextPut: self pathNameDelimiter ].
-			first := true.
-			s nextPutAll: p ] ].! !
+	^self collectionSpecies new: 1000 streamContents: [ :stream |
+		| ch |
+		[ self atEnd or: [ (subcollection includes: (ch := self next)) and: [aBlock value: ch. true] ] ] 
+			whileFalse: [ stream nextPut: ch ] ]! !
+
+!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 11:48'!
+cr
+	"Append a return character to the receiver."
+
+	self nextPut: Character crCharacter! !
+
+!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 19:32'!
+crlf
+	"Append a newLine character to the receiver.
+	The Cuis convention is to use lf on output."
+
+	self nextPutAll: String newLineString! !
+
+!Transcript class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:46'!
+cr
+	"WriteStream protocol.
+	In the older TranscriptStream, it added a CR character.
+	Now, finish the current incomplete entry."
+
+	self finishEntry! !
+
+!UndefinedObject methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 15:23'!
+ifNotNilDo: aBlock
+	"Override to do nothing."
+
+	^ self
+! !
 
 !GIFReadWriter methodsFor: 'private'!
 checkCodeSize
@@ -825,290 +1041,113 @@ typicalFileExtensions
 wantsToHandleGIFs
 	^ false! !
 
-!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
-ascii
-	"Switches the stream to ascii mode"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:13'!
+asTimeStamp
+	"Answer the receiver as an instance of TimeStamp."
 
-	binary := false.! !
+	^ self! !
 
-!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
-atEnd
-	"Answer whether the receiver can access any more objects."
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:14'!
+date
+	"Answer the date of the receiver."
 
-	^false! !
+	^ self asDate! !
 
-!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
-binary
-	"Switches the stream to binary mode"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+dateAndTime
+	"Answer a two element Array containing the receiver's date and time."
 
-	binary := true! !
+	^ Array with: self date with: self time! !
 
-!NullStream methodsFor: 'accessing' stamp: 'gsa 1/2/2013 13:38'!
-collectionSpecies
-	"The type of collection returned by the stream"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+minusDays: anInteger
+	"Answer a TimeStamp which is anInteger days before the receiver."
 
-	" TO-DO GSA 2/1/2013 As ByteString doesn't exist in Cuis, used String"
-	"^binary ifTrue:[ByteArray] ifFalse:[ByteString]"
-	^binary ifTrue:[ByteArray] ifFalse:[String]! !
+	^ self - (anInteger days)! !
 
-!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 03:35'!
-contents
-	"Answer all of the contents of the receiver."
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+minusSeconds: anInteger
+	"Answer a TimeStamp which is anInteger number of seconds before the receiver."
 
-	self shouldNotImplement! !
+	^ self - (anInteger seconds)! !
 
-!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
-element
-	"The element returned by the stream"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:18'!
+plusDays: anInteger
+	"Answer a TimeStamp which is anInteger days after the receiver."
 
-	^binary ifTrue:[0] ifFalse:[Character value: 0]! !
+	^ self + (anInteger days)! !
 
-!NullStream methodsFor: 'initialize' stamp: 'ar 2/25/2010 14:45'!
-initialize
-	"Initialize the receiver"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
+plusSeconds: anInteger
+	"Answer a TimeStamp which is anInteger number of seconds after the receiver."
 
-	binary := false.
-	position := 0.! !
+	^ self + (anInteger seconds)! !
 
-!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
-isBinary
-	"Return true if the receiver is a binary byte stream"
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+printOn: aStream 
+	"Print receiver's date and time on aStream."
 
-	^binary! !
+	aStream 
+		nextPutAll: self date printString;
+		space;
+		nextPutAll: self time printString.! !
 
-!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
-isEmpty
-	"Answer whether the receiver's contents has no elements."
+!TimeStamp methodsFor: 'squeak protocol'!
+species
 
-	^false
+	^ DateAndTime! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
+storeOn: aStream 
+
+	aStream 
+		print: self printString;
+		nextPutAll: ' asTimeStamp'! !
+
+!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:15'!
+time
+	"Answer the time of the receiver."
+
+	^ self asTime! !
+
+!TimeStamp class methodsFor: 'squeak protocol' stamp: 'fbs 4/20/2004 14:21'!
+current
+
+	| ts ticks |
+	ts := super now.
+	
+	ticks := ts ticks.
+	ticks at: 3 put: 0.
+	ts ticks: ticks offset: ts offset.
+	
+	^ ts
+		
 ! !
 
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
-next
-	"Answer the next object accessible by the receiver."
+!TimeStamp class methodsFor: 'instance creation' stamp: 'PeterHugossonMiller 9/2/2009 16:03'!
+fromMethodTimeStamp: aString
+	| stream |
+	(stream := aString readStream)
+		skipSeparators;
+		skipTo: Character space.
+	^self readFrom: stream.! !
 
-	position := position +1.
-	^self element! !
+!TimeStamp class methodsFor: 'ansi protocol' stamp: 'fbs 4/20/2004 14:22'!
+now
+	"Answer the current date and time as a TimeStamp."
 
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
-next: anInteger 
-	"Answer the next anInteger elements of my collection. Must override 
-	because default uses self contents species, which might involve a large 
-	collection."
+	^self current! !
 
-	position := position +anInteger.
-	^self collectionSpecies new: anInteger! !
-
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
-next: n into: aCollection
-	"Read n objects into the given collection.
-	Return aCollection or a partial copy if less than
-	n elements have been read."
-
-	^self next: n into: aCollection startingAt: 1! !
-
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
-next: n into: aCollection startingAt: startIndex
-	"Read n objects into the given collection. 
-	Return aCollection or a partial copy if less than
-	n elements have been read."
-
-	position := position +n.
-	^aCollection! !
-
-!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 04:19'!
-next: anInteger putAll: aCollection
-	"Store the next anInteger elements from the given collection."
-
-	^self next: anInteger putAll: aCollection startingAt: 1! !
-
-!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
-next: anInteger putAll: aCollection startingAt: startIndex
-	"Store the next anInteger elements from the given collection."
-
-	position := position + anInteger.
-	^aCollection! !
-
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
-nextInto: aCollection
-	"Read the next elements of the receiver into aCollection.
-	Return aCollection or a partial copy if less than aCollection
-	size elements have been read."
-
-	^self next: aCollection size into: aCollection startingAt: 1.! !
-
-!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
-nextInto: aCollection startingAt: startIndex
-	"Read the next elements of the receiver into aCollection.
-	Return aCollection or a partial copy if less than aCollection
-	size elements have been read."
-
-	^self next: (aCollection size - startIndex+1) into: aCollection startingAt: startIndex.! !
-
-!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
-nextPut: anObject 
-	"Insert the argument, anObject, as the next object accessible by the 
-	receiver. Answer anObject."
-
-	position := position +1.
-	^anObject! !
-
-!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
-nextPutAll: aCollection 
-	"Append the elements of aCollection to the sequence of objects accessible 
-	by the receiver. Answer aCollection."
-
-	position := position + aCollection size.
-	^aCollection! !
-
-!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 04:20'!
-peek
-	"Answer what would be returned if the message next were sent to the 
-	receiver. If the receiver is at the end, answer nil."
-
-	^self element! !
-
-!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
-position
-	"Answer the current position of accessing the sequence of objects."
-
-	^position! !
-
-!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
-position: anInteger 
-	"Set the current position for accessing the objects to be anInteger, as long 
-	as anInteger is within the bounds of the receiver's contents. If it is not, 
-	create an error notification."
-
-	(anInteger >= 0)
-		ifTrue: [position := anInteger]
-		ifFalse: [self positionError]! !
-
-!NullStream methodsFor: 'reading' stamp: 'nice 3/16/2010 23:04'!
-readInto: aCollection startingAt: startIndex count: n
-	"Read n objects into the given collection. 
-	Return number of elements that have been read."
-
-	position := position + n.
-	^n! !
-
-!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
-reset
-	"Set the receiver's position to the beginning of the sequence of objects."
-
-	position := 0! !
-
-!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
-skip: anInteger 
-	"Set the receiver's position to be the current position+anInteger. A 
-	subclass might choose to be more helpful and select the minimum of the 
-	receiver's size and position+anInteger, or the maximum of 1 and 
-	position+anInteger for the repositioning."
-
-	self position: position + anInteger! !
-
-!NullStream class methodsFor: 'instance creation' stamp: 'ar 2/25/2010 04:20'!
-new
-	"Creates a new instance"
-
-	^self basicNew initialize! !
-
-!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 16:21'!
-isColorForm
-	^false! !
-
-!Object methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 19:14'!
-readFromString: aString 
-	"Create an object based on the contents of aString."
-	^ self readFrom: aString readStream! !
-
-!Password methodsFor: 'accessing' stamp: 'tk 1/3/98 21:36'!
-cache: anObject
-	cache := anObject! !
-
-!Password methodsFor: 'as yet unclassified' stamp: 'tk 1/5/98 21:08'!
-decode: string
-	"Xor with secret number -- just so file won't have raw password in it"
-	| kk rand |
-	rand := Random new seed: 234237.
-	kk := (ByteArray new: string size) collect: [:bb | (rand next * 255) asInteger].
-	1 to: kk size do: [:ii |
-		kk at: ii put: ((kk at: ii) bitXor: (string at: ii) asciiValue)].
-	^ kk asString! !
-
-!Password methodsFor: 'accessing' stamp: 'gsa 1/6/2013 18:39'!
-passwordFor: serverDir
-
-"gsa 6/1/2013 Replaced UIManager for FillInTheBlankMorph. We should add #requestPassword to this morph"
-
-	"Returned the password from one of many sources.  OK if send in a nil arg."
-
-	| sp msg |
-	cache ifNotNil: [^ cache].
-	sequence ifNotNil: [
-		(sp := self serverPasswords) ifNotNil: [
-			sequence <= sp size ifTrue: [^ sp at: sequence]]].
-	msg := serverDir isRemoteDirectory
-		ifTrue: [serverDir moniker]
-		ifFalse: ['this directory'].
-	(serverDir user = 'anonymous') & (serverDir typeWithDefault == #ftp) ifTrue: [
-			"^ cache := UIManager default request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
-			initialAnswer: 'yourName@company.com'"
-			
-			^ cache := FillInTheBlankMorph request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
-			initialAnswer: 'yourName@company.com' 
-			
-			].
-
-	"^ cache := UIManager default requestPassword: 'Password for ', serverDir user, ' at ', msg, ':'."
-	
-	^ cache := FillInTheBlankMorph request: 'Password for ', serverDir user, ' at ', msg, ':'.
-	
-		"Diff between empty string and abort?"! !
-
-!Password methodsFor: 'accessing' stamp: 'mir 6/29/2001 01:01'!
-sequence
-	^sequence! !
-
-!Password methodsFor: 'accessing' stamp: 'tk 1/5/98 21:14'!
-sequence: anNumber
-	sequence := anNumber! !
-
-!Password methodsFor: 'as yet unclassified' stamp: 'HenrikSperreJohansen 6/12/2010 02:37'!
-serverPasswords
-	"Get the server passwords off the disk and decode them. The file 'sqk.info' must be in some folder that Squeak thinks is special (vm folder, or default directory).  (Note: This code works even if you are running with no system sources file.)"
-
-	| sfile |
-	(sfile := FileDirectory lookInUsualPlaces: 'sqk.info') ifNil: [^ nil].
-		"If not there, Caller will ask user for password"
-		"If you don't have this file, and you really do want to release an update, 
-		 contact Ted Kaehler."
-	^ (self decode: sfile contentsOfEntireFile) lines
-! !
-
-!Password class methodsFor: 'as yet unclassified' stamp: 'tk 6/24/1999 11:36'!
-shutDown
-	"Forget all cached passwords, so they won't stay in the image"
-
-	self allSubInstancesDo: [:each | each cache: nil].! !
-
-!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
-upToAnyOf: aCollection 
-	"Answer a subcollection from the current access position to the 
-	occurrence (if any, but not inclusive) of any object in the collection. If 
-	no matching object is found, answer the entire rest of the receiver."
-	^self upToAnyOf: aCollection do: [:matchingObject | ]! !
-
-!PositionableStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:03'!
-upToAnyOf: subcollection do: aBlock
-	"Answer a subcollection from the current access position to the occurrence (if any, but not inclusive) of any object in the collection.
-	Evaluate aBlock with this occurence as argument.
-	If no matching object is found, don't evaluate aBlock and answer the entire rest of the receiver."
-	
-	^self collectionSpecies new: 1000 streamContents: [ :stream |
-		| ch |
-		[ self atEnd or: [ (subcollection includes: (ch := self next)) and: [aBlock value: ch. true] ] ] 
-			whileFalse: [ stream nextPut: ch ] ]! !
+!TimeStamp class methodsFor: 'instance creation' stamp: 'stephaneducasse 2/4/2006 20:47'!
+readFrom: stream
+	| date time |
+	stream skipSeparators.
+	date := Date readFrom: stream.
+	stream skipSeparators.
+	time := Time readFrom: stream.
+	^self 
+		date: date
+		time: time! !
 
 !ScaledDecimal methodsFor: 'arithmetic' stamp: 'nice 5/17/2009 00:20'!
 * aNumber
@@ -1318,251 +1357,263 @@ readFrom: stringOrStream
 	
 	^(SqNumberParser on: stringOrStream) nextScaledDecimal! !
 
-!SequenceableCollection class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 21:07'!
-new: newSize streamContents: blockWithArg
+!Password methodsFor: 'accessing' stamp: 'tk 1/3/98 21:36'!
+cache: anObject
+	cache := anObject! !
 
-	| stream |
-	stream := WriteStream on: (self new: newSize).
-	blockWithArg value: stream.
-	stream position = newSize
-		ifTrue: [ ^stream originalContents ]
-		ifFalse: [ ^stream contents ]! !
+!Password methodsFor: 'as yet unclassified' stamp: 'tk 1/5/98 21:08'!
+decode: string
+	"Xor with secret number -- just so file won't have raw password in it"
+	| kk rand |
+	rand := Random new seed: 234237.
+	kk := (ByteArray new: string size) collect: [:bb | (rand next * 255) asInteger].
+	1 to: kk size do: [:ii |
+		kk at: ii put: ((kk at: ii) bitXor: (string at: ii) asciiValue)].
+	^ kk asString! !
 
-!Set methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 09:14'!
-removeAll
-	self init: array size.! !
+!Password methodsFor: 'accessing' stamp: 'gsa 1/6/2013 18:39'!
+passwordFor: serverDir
 
-!SocketStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:48'!
-crlf
-	"Append a newLine character to the receiver.
-	The Cuis convention is to use lf on output."
+"gsa 6/1/2013 Replaced UIManager for FillInTheBlankMorph. We should add #requestPassword to this morph"
 
-	self nextPutAll: String newLineString! !
+	"Returned the password from one of many sources.  OK if send in a nil arg."
 
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:59'!
-asByteString
-	"Convert the receiver into a ByteString, if possible"
-	"Do not raise an error if it's not possible, since my use case is usually one in which WideStrings may or may not have been mutated to something representable in a ByteString, and we mostly do this to save space if possible. If the percentage of such cases are small, it may be better to use isOctetString check first to avoid creating String instances"	
-	^self asOctetString! !
+	| sp msg |
+	cache ifNotNil: [^ cache].
+	sequence ifNotNil: [
+		(sp := self serverPasswords) ifNotNil: [
+			sequence <= sp size ifTrue: [^ sp at: sequence]]].
+	msg := serverDir isRemoteDirectory
+		ifTrue: [serverDir moniker]
+		ifFalse: ['this directory'].
+	(serverDir user = 'anonymous') & (serverDir typeWithDefault == #ftp) ifTrue: [
+			"^ cache := UIManager default request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
+			initialAnswer: 'yourName@company.com'"
+			
+			^ cache := FillInTheBlankMorph request: 'Please let this anonymous ftp\server know your email address.\This is the polite thing to do.' withCRs
+			initialAnswer: 'yourName@company.com' 
+			
+			].
 
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 11:58'!
-asOctetString
-	"Convert the receiver into an octet string, if possible"
-	"(IE, I am a WideString containing only character with codePoints < 255, so all of them fit in a latin1-string)."
-	| string |
-	string := String new: self size.
-	1 to: self size do: [:i | string at: i put: (self at: i)].
-	^string! !
+	"^ cache := UIManager default requestPassword: 'Password for ', serverDir user, ' at ', msg, ':'."
+	
+	^ cache := FillInTheBlankMorph request: 'Password for ', serverDir user, ' at ', msg, ':'.
+	
+		"Diff between empty string and abort?"! !
 
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:47'!
-asTime
-	"Many allowed forms, see Time>>readFrom:"
+!Password methodsFor: 'accessing' stamp: 'mir 6/29/2001 01:01'!
+sequence
+	^sequence! !
 
-	^ Time fromString: self.! !
+!Password methodsFor: 'accessing' stamp: 'tk 1/5/98 21:14'!
+sequence: anNumber
+	sequence := anNumber! !
 
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:49'!
-asTimeStamp
-	"Convert from obsolete TimeStamp format"
+!Password methodsFor: 'as yet unclassified' stamp: 'HenrikSperreJohansen 6/12/2010 02:37'!
+serverPasswords
+	"Get the server passwords off the disk and decode them. The file 'sqk.info' must be in some folder that Squeak thinks is special (vm folder, or default directory).  (Note: This code works even if you are running with no system sources file.)"
 
- 	^ TimeStamp fromString: self! !
-
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 18:52'!
-charactersExactlyMatching: aString
-	"Do a character-by-character comparison between the receiver and aString.  Return the index of the final character that matched exactly."
-
-	| count |
-	count := self size min: aString size.
-	1 to: count do: [:i | 
-		(self at: i) = (aString at: i) ifFalse: [
-			^ i - 1]].
-	^ count! !
-
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:46'!
-encodeForHTTP
-
-	^ self ! !
-
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
-subStrings: separators 
-	"Answer an array containing the substrings in the receiver separated 
-	by the elements of separators."
-	| result sourceStream subStringStream |
-	#Collectn.
-	"Changed 2000/04/08 For ANSI <readableString> protocol."
-	(separators isString or: [ separators allSatisfy: [ :element | element isKindOf: Character ] ])
-		ifFalse: [ ^ self error: 'separators must be Characters.' ].
-	sourceStream := self readStream.
-	result := OrderedCollection new.
-	subStringStream := String new writeStream.
-	[ sourceStream atEnd ] whileFalse: [
-		| char |
-		char := sourceStream next.
-		(separators includes: char)
-			ifTrue: [
-				subStringStream isEmpty ifFalse: [
-					result add: subStringStream contents.
-					subStringStream := String new writeStream ] ]
-			ifFalse: [
-				subStringStream nextPut: char ] ].
-	subStringStream isEmpty ifFalse: [
-		result add: subStringStream contents ].
-	^ result asArray! !
-
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/2/2013 20:45'!
-unescapePercentsWithTextEncoding: encodingName 
-	^ self! !
-
-!String methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 20:44'!
-withCRs
-	"Return a copy of the receiver in which backslash (\) characters have been replaced with carriage returns."
-
-	^ self collect: [ :c | c = $\ ifTrue: [ Character crCharacter ] ifFalse: [ c ]].! !
-
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
-cr
-	"Answer a string containing a single carriage return character."
-
-	^ self with: Character crCharacter! !
-
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
-crlf
-	"Answer a string containing a carriage return and a linefeed."
-
-	^ self with: Character crCharacter with: Character lfCharacter
+	| sfile |
+	(sfile := FileDirectory lookInUsualPlaces: 'sqk.info') ifNil: [^ nil].
+		"If not there, Caller will ask user for password"
+		"If you don't have this file, and you really do want to release an update, 
+		 contact Ted Kaehler."
+	^ (self decode: sfile contentsOfEntireFile) lines
 ! !
 
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 12:43'!
-crlfcrlf
-	^self crlf , self crlf.! !
+!Password class methodsFor: 'as yet unclassified' stamp: 'tk 6/24/1999 11:36'!
+shutDown
+	"Forget all cached passwords, so they won't stay in the image"
 
-!String class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 08:42'!
-lf
-	"Answer a string containing a single Lf character."
+	self allSubInstancesDo: [:each | each cache: nil].! !
 
-	^ self with: Character lfCharacter! !
+!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
+ascii
+	"Switches the stream to ascii mode"
 
-!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:39'!
-hours
+	binary := false.! !
 
-	^ self hour! !
+!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
+atEnd
+	"Answer whether the receiver can access any more objects."
 
-!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:39'!
-minutes
+	^false! !
 
-	^ self minute! !
+!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
+binary
+	"Switches the stream to binary mode"
 
-!Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/20/2012 12:40'!
-seconds
+	binary := true! !
 
-	^ self second! !
+!NullStream methodsFor: 'accessing' stamp: 'gsa 1/2/2013 13:38'!
+collectionSpecies
+	"The type of collection returned by the stream"
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:13'!
-asTimeStamp
-	"Answer the receiver as an instance of TimeStamp."
+	" TO-DO GSA 2/1/2013 As ByteString doesn't exist in Cuis, used String"
+	"^binary ifTrue:[ByteArray] ifFalse:[ByteString]"
+	^binary ifTrue:[ByteArray] ifFalse:[String]! !
 
-	^ self! !
+!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 03:35'!
+contents
+	"Answer all of the contents of the receiver."
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:14'!
-date
-	"Answer the date of the receiver."
+	self shouldNotImplement! !
 
-	^ self asDate! !
+!NullStream methodsFor: 'accessing' stamp: 'ar 2/25/2010 04:18'!
+element
+	"The element returned by the stream"
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
-dateAndTime
-	"Answer a two element Array containing the receiver's date and time."
+	^binary ifTrue:[0] ifFalse:[Character value: 0]! !
 
-	^ Array with: self date with: self time! !
+!NullStream methodsFor: 'initialize' stamp: 'ar 2/25/2010 14:45'!
+initialize
+	"Initialize the receiver"
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
-minusDays: anInteger
-	"Answer a TimeStamp which is anInteger days before the receiver."
+	binary := false.
+	position := 0.! !
 
-	^ self - (anInteger days)! !
+!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
+isBinary
+	"Return true if the receiver is a binary byte stream"
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
-minusSeconds: anInteger
-	"Answer a TimeStamp which is anInteger number of seconds before the receiver."
+	^binary! !
 
-	^ self - (anInteger seconds)! !
+!NullStream methodsFor: 'testing' stamp: 'ar 2/25/2010 04:19'!
+isEmpty
+	"Answer whether the receiver's contents has no elements."
 
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:18'!
-plusDays: anInteger
-	"Answer a TimeStamp which is anInteger days after the receiver."
-
-	^ self + (anInteger days)! !
-
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:19'!
-plusSeconds: anInteger
-	"Answer a TimeStamp which is anInteger number of seconds after the receiver."
-
-	^ self + (anInteger seconds)! !
-
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
-printOn: aStream 
-	"Print receiver's date and time on aStream."
-
-	aStream 
-		nextPutAll: self date printString;
-		space;
-		nextPutAll: self time printString.! !
-
-!TimeStamp methodsFor: 'squeak protocol'!
-species
-
-	^ DateAndTime! !
-
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:17'!
-storeOn: aStream 
-
-	aStream 
-		print: self printString;
-		nextPutAll: ' asTimeStamp'! !
-
-!TimeStamp methodsFor: 'squeak protocol' stamp: 'brp 7/27/2003 17:15'!
-time
-	"Answer the time of the receiver."
-
-	^ self asTime! !
-
-!TimeStamp class methodsFor: 'squeak protocol' stamp: 'fbs 4/20/2004 14:21'!
-current
-
-	| ts ticks |
-	ts := super now.
-	
-	ticks := ts ticks.
-	ticks at: 3 put: 0.
-	ts ticks: ticks offset: ts offset.
-	
-	^ ts
-		
+	^false
 ! !
 
-!TimeStamp class methodsFor: 'instance creation' stamp: 'PeterHugossonMiller 9/2/2009 16:03'!
-fromMethodTimeStamp: aString
-	| stream |
-	(stream := aString readStream)
-		skipSeparators;
-		skipTo: Character space.
-	^self readFrom: stream.! !
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
+next
+	"Answer the next object accessible by the receiver."
 
-!TimeStamp class methodsFor: 'ansi protocol' stamp: 'fbs 4/20/2004 14:22'!
-now
-	"Answer the current date and time as a TimeStamp."
+	position := position +1.
+	^self element! !
 
-	^self current! !
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
+next: anInteger 
+	"Answer the next anInteger elements of my collection. Must override 
+	because default uses self contents species, which might involve a large 
+	collection."
 
-!TimeStamp class methodsFor: 'instance creation' stamp: 'stephaneducasse 2/4/2006 20:47'!
-readFrom: stream
-	| date time |
-	stream skipSeparators.
-	date := Date readFrom: stream.
-	stream skipSeparators.
-	time := Time readFrom: stream.
-	^self 
-		date: date
-		time: time! !
+	position := position +anInteger.
+	^self collectionSpecies new: anInteger! !
+
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
+next: n into: aCollection
+	"Read n objects into the given collection.
+	Return aCollection or a partial copy if less than
+	n elements have been read."
+
+	^self next: n into: aCollection startingAt: 1! !
+
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 14:48'!
+next: n into: aCollection startingAt: startIndex
+	"Read n objects into the given collection. 
+	Return aCollection or a partial copy if less than
+	n elements have been read."
+
+	position := position +n.
+	^aCollection! !
+
+!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 04:19'!
+next: anInteger putAll: aCollection
+	"Store the next anInteger elements from the given collection."
+
+	^self next: anInteger putAll: aCollection startingAt: 1! !
+
+!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
+next: anInteger putAll: aCollection startingAt: startIndex
+	"Store the next anInteger elements from the given collection."
+
+	position := position + anInteger.
+	^aCollection! !
+
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
+nextInto: aCollection
+	"Read the next elements of the receiver into aCollection.
+	Return aCollection or a partial copy if less than aCollection
+	size elements have been read."
+
+	^self next: aCollection size into: aCollection startingAt: 1.! !
+
+!NullStream methodsFor: 'reading' stamp: 'ar 2/25/2010 04:19'!
+nextInto: aCollection startingAt: startIndex
+	"Read the next elements of the receiver into aCollection.
+	Return aCollection or a partial copy if less than aCollection
+	size elements have been read."
+
+	^self next: (aCollection size - startIndex+1) into: aCollection startingAt: startIndex.! !
+
+!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
+nextPut: anObject 
+	"Insert the argument, anObject, as the next object accessible by the 
+	receiver. Answer anObject."
+
+	position := position +1.
+	^anObject! !
+
+!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 14:48'!
+nextPutAll: aCollection 
+	"Append the elements of aCollection to the sequence of objects accessible 
+	by the receiver. Answer aCollection."
+
+	position := position + aCollection size.
+	^aCollection! !
+
+!NullStream methodsFor: 'writing' stamp: 'ar 2/25/2010 04:20'!
+peek
+	"Answer what would be returned if the message next were sent to the 
+	receiver. If the receiver is at the end, answer nil."
+
+	^self element! !
+
+!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
+position
+	"Answer the current position of accessing the sequence of objects."
+
+	^position! !
+
+!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
+position: anInteger 
+	"Set the current position for accessing the objects to be anInteger, as long 
+	as anInteger is within the bounds of the receiver's contents. If it is not, 
+	create an error notification."
+
+	(anInteger >= 0)
+		ifTrue: [position := anInteger]
+		ifFalse: [self positionError]! !
+
+!NullStream methodsFor: 'reading' stamp: 'nice 3/16/2010 23:04'!
+readInto: aCollection startingAt: startIndex count: n
+	"Read n objects into the given collection. 
+	Return number of elements that have been read."
+
+	position := position + n.
+	^n! !
+
+!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
+reset
+	"Set the receiver's position to the beginning of the sequence of objects."
+
+	position := 0! !
+
+!NullStream methodsFor: 'positioning' stamp: 'ar 2/25/2010 14:47'!
+skip: anInteger 
+	"Set the receiver's position to be the current position+anInteger. A 
+	subclass might choose to be more helpful and select the minimum of the 
+	receiver's size and position+anInteger, or the maximum of 1 and 
+	position+anInteger for the repositioning."
+
+	self position: position + anInteger! !
+
+!NullStream class methodsFor: 'instance creation' stamp: 'ar 2/25/2010 04:20'!
+new
+	"Creates a new instance"
+
+	^self basicNew initialize! !
 
 !TimeStampTest methodsFor: 'Coverage' stamp: 'brp 7/27/2003 13:50'!
 classToBeTested
@@ -1801,55 +1852,4 @@ testTimeStamp
 timestampClass
 
 	^ TimeStamp! !
-
-!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/14/2013 13:59'!
-asDateAndTime
-
-	^ start ! !
-
-!Timespan methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/21/2013 13:44'!
-day
-	"Answer the day of the year represented by the receiver."
-	^ self dayOfYear! !
-
-!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:02'!
-starting: aDateAndTime 
-
-	^ self starting: aDateAndTime duration: Duration zero ! !
-
-!Timespan class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 20:42'!
-starting: aDateAndTime duration: aDuration
-
-	^ self basicNew
-  		start: aDateAndTime asDateAndTime;
- 		duration: aDuration;
-		yourself.! !
-
-!Transcript class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 13:46'!
-cr
-	"WriteStream protocol.
-	In the older TranscriptStream, it added a CR character.
-	Now, finish the current incomplete entry."
-
-	self finishEntry! !
-
-!UndefinedObject methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 2/12/2013 15:23'!
-ifNotNilDo: aBlock
-	"Override to do nothing."
-
-	^ self
-! !
-
-!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/6/2013 11:48'!
-cr
-	"Append a return character to the receiver."
-
-	self nextPut: Character crCharacter! !
-
-!WriteStream methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/1/2013 19:32'!
-crlf
-	"Append a newLine character to the receiver.
-	The Cuis convention is to use lf on output."
-
-	self nextPutAll: String newLineString! !
 GIFReadWriter initialize!
