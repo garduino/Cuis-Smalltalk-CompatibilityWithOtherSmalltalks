@@ -265,18 +265,6 @@ sameAs: aCharacter
 	"Answer whether the receiver is equal to aCharacter, ignoring case"
 	^ (self asLowercase = aCharacter asLowercase)! !
 
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 09:16'!
-cr
-	"Answer the Character representing a carriage return."
-
-	^ self crCharacter! !
-
-!Character class methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 12/26/2012 09:16'!
-lf
-	"Answer the Character representing a linefeed."
-
-	^ self lfCharacter! !
-
 !DateAndTime methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 1/10/2013 19:53'!
 asDate
 
