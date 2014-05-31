@@ -1,6 +1,6 @@
-'From Cuis 4.2 of 25 July 2013 [latest update: #1782] on 9 August 2013 at 1:58:59.562436 pm'!
+'From Cuis 4.2 of 25 July 2013 [latest update: #2009] on 31 May 2014 at 11:54:27.854525 am'!
 'Description Please enter a description for this package '!
-!provides: 'Cuis-CompatibilityWithOtherSmalltalks' 1 1!
+!provides: 'Cuis-CompatibilityWithOtherSmalltalks' 1 2!
 !requires: 'Network-Kernel' nil nil nil!
 !classDefinition: #GIFReadWriter category: #'Cuis-CompatibilityWithOtherSmalltalks'!
 ImageReadWriter subclass: #GIFReadWriter
@@ -304,6 +304,10 @@ asSeconds
  	"Answer the number of seconds in the receiver."
  	^ seconds
  ! !
+
+!Integer methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 5/31/2014 11:26'!
+radix: base 
+	^ self printStringBase: base! !
 
 !Time methodsFor: '*Cuis-CompatibilityWithOtherSmalltalks' stamp: 'gsa 8/9/2013 12:27'!
 asSeconds
